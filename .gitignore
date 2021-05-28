@@ -3,3 +3,6 @@
 
 # Executables directory
 bin/
+
+# Misc
+*.swp
