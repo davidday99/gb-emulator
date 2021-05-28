@@ -1,5 +1,5 @@
-#ifndef SM83_H_INCLUDE
-#define SM83_H_INCLUDE
+#ifndef SM83_H
+#define SM83_H
 
 #include <stdint.h>
 
@@ -41,4 +41,4 @@ typedef struct Registers {
 #define FLAG_H_MASK 0x20
 #define FLAG_C_MASK 0x10
 
-#endif /* SM83_H_INCLUDE */
+#endif /* SM83_H */
