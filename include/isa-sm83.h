@@ -262,7 +262,6 @@
 #define XOR_D8 0xEE
 #define RST_38H 0xEF
 
-
 #define LD_A_A8 0xF0
 #define POP_AF 0xF1
 #define LD_A_C 0xF2
@@ -552,8 +551,6 @@
 #define SET_7_L 0xFD
 #define SET_7_HL 0xFE
 #define SET_7_A 0xFF
-
-
 
 #define CB 1
 #define NO_CB 0

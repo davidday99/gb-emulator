@@ -186,3 +186,31 @@ void run(CPU *cpu) {
         step(cpu);
     } while (cpu->current_state.PC != 0);
 }
+
+void set_flag_register(CPU *cpu, uint8_t flag_mask) {
+    return;
+}
+
+uint8_t execute_nop(CPU *cpu) {
+    cpu->next_state.PC = cpu->current_state.PC + 1;
+    return 4;
+}
+
+uint8_t execute_ld_bc_d16(CPU *cpu, int16_t immediate) {
+    cpu->next_state.BC = immediate;
+    return 12;
+}
+
+uint8_t execute_ld_bc_a(CPU *cpu) {
+    cpu->next_state.BC = cpu->current_state.A;
+    return 4;
+}
+
+uint8_t execute_inc_bc(CPU *cpu) {
+    cpu->next_state.BC++;
+    return 4;
+}
+
+uint8_t execute_dec_bc(CPU *cpu) {
+    cpu->next_state.BC--;
+}

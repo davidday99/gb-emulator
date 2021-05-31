@@ -6,8 +6,13 @@
 #define RAM_SIZE 0x10000
 
 typedef struct Core {
-    uint8_t A;
-    uint8_t F;
+    union {
+        struct {
+            uint8_t F;
+            uint8_t A;
+        };
+        uint16_t AF;
+    };
 
     union {
         struct {
