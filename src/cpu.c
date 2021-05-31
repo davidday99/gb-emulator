@@ -11,12 +11,17 @@
 #define Low16bits(x) ((x) & 0xFFFF)
 #define Low8bits(x) ((x) & 0xFF)
 
+/************************************************************/
+/*                                                          */
+/* CPU FUNCTIONS                                            */
+/*                                                          */
+/************************************************************/
 
 /************************************************************/
 /*                                                          */
 /* Procedure : dump_registers                               */
 /*                                                          */
-/* Purpose   : dump value of each architectural register    */ 
+/* Purpose   : dump value of each CPU register              */ 
 /*                                                          */
 /************************************************************/
 
@@ -36,7 +41,6 @@ void dump_registers(CPU *cpu) {
     printf("L: 0x%02X\n", cpu->current_state.L);
     printf("********************************\n");
 }
-
 
 /************************************************************/
 /*                                                          */
@@ -187,6 +191,12 @@ void run(CPU *cpu) {
     } while (cpu->current_state.PC != 0);
 }
 
+/************************************************************/
+/*                                                          */
+/* FLAG REGISTER FUNCTIONS                                  */
+/*                                                          */
+/************************************************************/
+
 void set_z_flag(CPU *cpu, uint8_t z) {
     if (z == 1) {
         cpu->next_state.F |= FLAG_Z_MASK;
@@ -219,7 +229,7 @@ void set_c_flag(CPU *cpu, uint8_t c) {
     }
 }
 
-void set_flag_register(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
+void set_flags(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
     if (flag_mask & FLAG_Z_MASK) {
         set_z_flag(cpu, z);
     }
@@ -233,6 +243,34 @@ void set_flag_register(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_
         set_c_flag(cpu, c);
     }
 }
+
+uint8_t detect_half_carry(uint8_t op1, uint8_t op2) {
+    op1 &= 0xF;
+    op2 &= 0xF;
+
+    uint8_t sum = op1 + op2;
+
+    return (sum & 0x10) == 0x10;
+}
+
+uint8_t detect_carry(uint8_t op1, uint8_t op2, uint8_t is_CP) {
+    if (is_CP) {
+        return op1 < op2;
+    } else {
+        op1 &= 0xFF;
+        op2 &= 0xFF;
+
+        uint16_t sum = op1 + op2;
+        
+        return (sum & 0x100) == 0x100;
+    }
+}
+
+/************************************************************/
+/*                                                          */
+/* INSTRUCTION IMPLEMENTATIONS                              */
+/*                                                          */
+/************************************************************/
 
 uint8_t execute_nop(CPU *cpu) {
     cpu->next_state.PC = cpu->current_state.PC + 1;
