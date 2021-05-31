@@ -7,6 +7,7 @@
 #define FLAG_N_MASK 0x40
 #define FLAG_H_MASK 0x20
 #define FLAG_C_MASK 0x10
+#define NO_FLAGS 0
 
 #define NUM_INSTRUCTIONS_NON_CB 244
 #define NUM_INSTRUCTIONS_CB 256
@@ -559,9 +560,9 @@ typedef struct Instruction {
     char mnemonic[15];
     uint8_t opcode;
     uint8_t immediate_size;
-    uint16_t immediate;
     uint8_t byte_len;
-    uint8_t cycles;
+    uint8_t flag_mask;
+    uint8_t is_CB;
 } Instruction;
 
 extern const Instruction INSTRUCTIONS[NUM_INSTRUCTIONS_NON_CB];

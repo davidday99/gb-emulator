@@ -36,7 +36,7 @@ void simulate(CPU *cpu) {
                 start++;
             }
             sscanf(start, "%X %X", &mem_start, &mem_stop);
-            while (mem_start < mem_stop) {
+            while (mem_start <= mem_stop) {
                 printf("0x%04X: 0x%02X\n", mem_start, cpu->RAM[mem_start]);
                 mem_start++;
             }
@@ -68,7 +68,7 @@ void simulate(CPU *cpu) {
 int main() {
     CPU cpu;
 
-    FILE *f = fopen("games/tetris.gb", "rb");
+    FILE *f = fopen("games/test.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");

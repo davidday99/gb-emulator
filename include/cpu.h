@@ -55,6 +55,6 @@ void step_n(uint32_t n, CPU *cpu);
 void run(CPU *cpu);
 void dump_registers(CPU *cpu);
 void load_program(FILE *fp, CPU *cpu);
-void set_flag_register(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c);
+void set_flags(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c);
 
 #endif /* CPU_H */
