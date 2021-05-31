@@ -6,22 +6,11 @@
 #include <string.h>
 
 #include "../include/cpu.h"
+#include "../include/isa-sm83.h"
 
 #define Low16bits(x) ((x) & 0xFFFF)
 #define Low8bits(x) ((x) & 0xFF)
 
-const Instruction INSTRUCTIONS[] = {
-    {"NOP", NOP, 0, 0, 4},
-    {"LD BC,d16", LD_BC_D16, 2, 0, 12},
-    {"LD (BC),A", LD_BC_A, 0, 0, 8},
-    {"INC BC", INC_BC, 0, 0, 8},
-    {"INC B", INC_B, 0, 0, 4},
-    {"DEC B", DEC_B, 0, 0, 4},
-};
-
-const Instruction CB_INSTRUCTIONS[] = {
-
-};
 
 /************************************************************/
 /*                                                          */
@@ -89,7 +78,6 @@ uint8_t fetch(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 Instruction decode(uint8_t opcode, CPU *cpu) {
-    printf("Opcode: 0x%02X\n", opcode);
     Instruction instruction;
     uint16_t immediate;
     uint8_t is_CB = 0;
@@ -124,8 +112,26 @@ Instruction decode(uint8_t opcode, CPU *cpu) {
 }
 
 void execute(Instruction *instruction, CPU *cpu) {
-    printf("NOP\n", instruction->mnemonic);
-    cpu->next_state.PC = cpu->current_state.PC + 1;
+    switch (instruction->opcode) {
+        case NOP:
+            cpu->next_state.PC = cpu->current_state.PC + instruction->byte_len;
+            break;
+
+        case LD_BC_D16:
+            cpu->next_state.BC = instruction->immediate;
+            cpu->next_state.PC = cpu->current_state.PC + instruction->byte_len;
+        
+        case LD_BC_A:
+            cpu->RAM[cpu->current_state.BC] = cpu->current_state.A;
+            cpu->next_state.PC = cpu->current_state.PC + instruction->byte_len;
+
+        case JP_A16:
+            cpu->next_state.PC = instruction->immediate;
+            break;
+
+        default:
+            break;
+    }
 }
 
 void simulate_cycles(uint8_t cycles, CPU *cpu) {
@@ -140,16 +146,18 @@ void simulate_cycles(uint8_t cycles, CPU *cpu) {
 /*                                                          */
 /* Procedure : step                                         */
 /*                                                          */
-/* Purpose   : execute a single instruction                 */
+/* Purpose   : execute a single instruction, return opcode  */
 /*                                                          */
 /************************************************************/
-void step(CPU *cpu) {
+uint8_t step(CPU *cpu) {
     uint8_t opcode = fetch(cpu);
     Instruction instruction = decode(opcode, cpu);
     execute(&instruction, cpu);
     simulate_cycles(instruction.cycles, cpu);
 
     cpu->current_state = cpu->next_state;
+
+    return instruction.opcode;
 }
 
 /************************************************************/
@@ -160,12 +168,9 @@ void step(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void step_n(uint32_t n, CPU *cpu) {
-    if (n == 0) {
-        return;
-    }
-
-    while (n-- > 0) {
+    while (n > 0) {
         step(cpu);
+        n--;
     }
 }
 

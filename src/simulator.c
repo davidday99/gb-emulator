@@ -9,6 +9,7 @@
 void simulate(CPU *cpu) {
     char input[MAX_INPUT_LEN];
     uint32_t cycles;
+    uint16_t mem_start, mem_stop;
 
     do {
         printf("> ");
@@ -30,12 +31,25 @@ void simulate(CPU *cpu) {
             run(cpu);
             break;
 
+        case 'm':
+            while (isalpha(*start)) {
+                start++;
+            }
+            sscanf(start, "%X %X", &mem_start, &mem_stop);
+            while (mem_start < mem_stop) {
+                printf("0x%04X: 0x%02X\n", mem_start, cpu->RAM[mem_start]);
+                mem_start++;
+            }
+
         case 's':
             while (isalpha(*start)) {
                 start++;
             }
             cycles = strtol(start, &end, 10);
-            step_n(cycles, cpu);
+            while (cycles > 0) {
+                printf("Opcode: 0x%02X\n", step(cpu));
+                cycles--;
+            }
             break;
 
         case 'q':
