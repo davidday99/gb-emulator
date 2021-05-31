@@ -121,7 +121,7 @@ void execute(Instruction *instruction, CPU *cpu) {
             cpu->next_state.BC = instruction->immediate;
             cpu->next_state.PC = cpu->current_state.PC + instruction->byte_len;
         
-        case LD_BC_A:
+        case LD_REF_BC_A:
             cpu->RAM[cpu->current_state.BC] = cpu->current_state.A;
             cpu->next_state.PC = cpu->current_state.PC + instruction->byte_len;
 
@@ -187,8 +187,51 @@ void run(CPU *cpu) {
     } while (cpu->current_state.PC != 0);
 }
 
-void set_flag_register(CPU *cpu, uint8_t flag_mask) {
-    return;
+void set_z_flag(CPU *cpu, uint8_t z) {
+    if (z == 1) {
+        cpu->next_state.F |= FLAG_Z_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_Z_MASK;
+    }
+}
+
+void set_n_flag(CPU *cpu, uint8_t n) {
+    if (n == 1) {
+        cpu->next_state.F |= FLAG_N_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_N_MASK;
+    }
+}
+
+void set_h_flag(CPU *cpu, uint8_t h) {
+    if (h == 1) {
+        cpu->next_state.F |= FLAG_H_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_H_MASK;
+    }
+}
+
+void set_c_flag(CPU *cpu, uint8_t c) {
+    if (c == 1) {
+        cpu->next_state.F |= FLAG_C_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_C_MASK;
+    }
+}
+
+void set_flag_register(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
+    if (flag_mask & FLAG_Z_MASK) {
+        set_z_flag(cpu, z);
+    }
+    if (flag_mask & FLAG_N_MASK) {
+        set_n_flag(cpu, n);
+    }
+    if (flag_mask & FLAG_H_MASK) {
+        set_h_flag(cpu, h);
+    }
+    if (flag_mask & FLAG_C_MASK) {
+        set_c_flag(cpu, c);
+    }
 }
 
 uint8_t execute_nop(CPU *cpu) {
