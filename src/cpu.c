@@ -416,6 +416,7 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case CALL:
             break;
         case JP:
+            cpu->next_state.PC = dest;
             break;
         case JR:
             break;
@@ -655,6 +656,7 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
         case BITWISE:
             break;
         case JUMP:
+            handle_jump_operation(cpu, instruction, dest, src);
             break;
         case MISC:
             handle_misc_operation(cpu, instruction, dest, src);

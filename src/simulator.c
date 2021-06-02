@@ -71,7 +71,7 @@ int main() {
     uint16_t x = 1;
     x++;
 
-    FILE *f = fopen("games\\test.gb", "rb");
+    FILE *f = fopen("games\\tetris.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");

@@ -197,7 +197,7 @@ const Instruction INSTRUCTIONS[] = {
     {"NA"},
     {"NA"},
     {"NA"},
-    {"NA"},
+    {"JP a16", OPCODE_JP_A16, A16, IMMEDIATE_MEM, NONE, NA, JP, JUMP, UNCONDITIONAL, 0, 3},
     {"NA"},
     {"NA"},
     {"NA"},
