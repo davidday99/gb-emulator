@@ -69,43 +69,43 @@ void write_register(CPU *cpu, enum operand reg, uint16_t value) {
     }
     switch (reg) {
         case A:
-            cpu->current_state.A = value;
+            cpu->next_state.A = value;
             break;
         case B:
-            value = cpu->current_state.B = value;
+            cpu->next_state.B = value;
             break;
         case C:
-            value = cpu->current_state.C = value;
+            cpu->next_state.C = value;
             break;
         case D:
-            value = cpu->current_state.D = value;
+            cpu->next_state.D = value;
             break;
         case E:
-            value = cpu->current_state.E = value;
+            cpu->next_state.E = value;
             break;
         case H:
-            value = cpu->current_state.H = value;
+            cpu->next_state.H = value;
             break;
         case L:
-            value = cpu->current_state.L = value;
+            cpu->next_state.L = value;
             break;
         case AF:
-            value = cpu->current_state.AF = value;
+            cpu->next_state.AF = value;
             break;
         case BC:
-            value = cpu->current_state.BC = value;
+            cpu->next_state.BC = value;
             break;
         case DE:
-            value = cpu->current_state.DE = value;
+            cpu->next_state.DE = value;
             break;
         case HL:
-            value = cpu->current_state.HL = value;
+            cpu->next_state.HL = value;
             break;
         case PC:
-            value = cpu->current_state.PC = value;
+            cpu->next_state.PC = value;
             break;
         case SP:
-            value = cpu->current_state.SP = value;
+            cpu->next_state.SP = value;
             break;
     }
 }
@@ -117,8 +117,8 @@ void write_register(CPU *cpu, enum operand reg, uint16_t value) {
 /************************************************************/
 
 uint8_t read_memory(CPU *cpu, uint16_t address) {
-    return cpu->RAM[address];
     cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
+    return cpu->RAM[address];
 }
 
 void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
@@ -140,7 +140,7 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
             break;
 
         case REGISTER_INDIRECT:
-            op = cpu->RAM[get_register_value(cpu, operand)];
+            op = read_memory(cpu, get_register_value(cpu, operand));
 
             if (operand == C) {
                 op += 0xFF00;
@@ -153,26 +153,26 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
 
         case IMMEDIATE_MEM:
             if (operand == A8) {
-                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1];
+                op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
             } else if (operand == D8) {
-                op = (int8_t) cpu->RAM[cpu->current_state.PC + 1];
+                op = (int8_t) read_memory(cpu, cpu->current_state.PC + 1);
             } else if (operand == A16) {
-                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1] | 
-                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
+                op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
+                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
             } else if (operand == D16) {
-                op = (int16_t) cpu->RAM[cpu->current_state.PC + 1] | 
-                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
+                op = (int16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
+                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
             }
             break;
 
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
-                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1];
+                op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
                 op += 0xFF00;
             } else if (operand == A16) {
-                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1] | 
-                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
-                op = cpu->RAM[op];
+                op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
+                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, op);
             } 
 
             break;
@@ -196,7 +196,7 @@ void exec_ld(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     }
 }
 
-void handle_memory_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case LD:
             exec_ld(cpu, instruction, dest, src);
@@ -215,6 +215,7 @@ void handle_memory_operation(CPU *cpu, Instruction *instruction, uint16_t dest, 
         default:
             break;
     }
+    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
 void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -246,6 +247,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
         default:
             break;
     }
+    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -370,6 +372,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         default:
             break;
     }
+    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
 /************************************************************/
@@ -604,7 +607,7 @@ void load_program(FILE *fp, CPU *cpu) {
 /*                                                          */
 /************************************************************/
 uint8_t fetch(CPU *cpu) {
-    return cpu->RAM[cpu->current_state.PC];
+    return read_memory(cpu, cpu->current_state.PC);
 }
 
 /************************************************************/
@@ -635,8 +638,10 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation_type) {
         case LD_ST_MOV:
+            handle_ld_st_mov_operation(cpu, instruction, dest, src);
             break;
         case ALU:
+            handle_alu_operation(cpu, instruction, dest, src);
             break;
         case SHIFTER:
             break;
@@ -645,6 +650,7 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
         case JUMP:
             break;
         case MISC:
+            handle_misc_operation(cpu, instruction, dest, src);
             break;
         default:
             break;
