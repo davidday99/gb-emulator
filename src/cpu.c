@@ -112,6 +112,82 @@ void write_register(CPU *cpu, enum operand reg, uint16_t value) {
 
 /************************************************************/
 /*                                                          */
+/* FLAG REGISTER FUNCTIONS                                  */
+/*                                                          */
+/************************************************************/
+
+void set_z_flag(CPU *cpu, uint8_t z) {
+    uint8_t is_zero = !z;
+    if (is_zero) {
+        cpu->next_state.F |= FLAG_Z_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_Z_MASK;
+    }
+}
+
+void set_n_flag(CPU *cpu, uint8_t n) {
+    if (n == 1) {
+        cpu->next_state.F |= FLAG_N_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_N_MASK;
+    }
+}
+
+void set_h_flag(CPU *cpu, uint8_t h) {
+    if (h == 1) {
+        cpu->next_state.F |= FLAG_H_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_H_MASK;
+    }
+}
+
+void set_c_flag(CPU *cpu, uint8_t c) {
+    if (c == 1) {
+        cpu->next_state.F |= FLAG_C_MASK;
+    } else {
+        cpu->next_state.F &= ~FLAG_C_MASK;
+    }
+}
+
+void set_flags(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
+    if (flag_mask & FLAG_Z_MASK) {
+        set_z_flag(cpu, z);
+    }
+    if (flag_mask & FLAG_N_MASK) {
+        set_n_flag(cpu, n);
+    }
+    if (flag_mask & FLAG_H_MASK) {
+        set_h_flag(cpu, h);
+    }
+    if (flag_mask & FLAG_C_MASK) {
+        set_c_flag(cpu, c);
+    }
+}
+
+uint8_t detect_half_carry(uint8_t op1, uint8_t op2) {
+    op1 &= 0xF;
+    op2 &= 0xF;
+
+    uint8_t sum = op1 + op2;
+
+    return (sum & 0x10) == 0x10;
+}
+
+uint8_t detect_carry(uint8_t op1, uint8_t op2, uint8_t is_CP) {
+    if (is_CP) {
+        return op1 < op2;
+    } else {
+        op1 &= 0xFF;
+        op2 &= 0xFF;
+
+        uint16_t sum = op1 + op2;
+        
+        return (sum & 0x100) == 0x100;
+    }
+}
+
+/************************************************************/
+/*                                                          */
 /* MEMORY ACCESS FUNCTIONS                                  */
 /*                                                          */
 /************************************************************/
@@ -222,7 +298,11 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
     switch (instruction->operation) {
         case ADD:
             write_register(cpu, instruction->destination, dest + src);
-            //set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src, 0, detect_half_carry(dest, src), detect_carry(dest, src, ))
+            if (instruction->destination <= L) {
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src, 0, detect_half_carry(dest, src), detect_carry(dest, src, 0));
+            } else {
+                set_flags(cpu, FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, 0, 0, detect_half_carry(dest, src), detect_carry(dest, src, 0));
+            }
             break;
         case ADC:
 
@@ -233,6 +313,9 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             break;
         case INC:
             write_register(cpu, instruction->destination, dest + 1);
+            if (instruction->destination <= L) {
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, dest + 1, 0);
+            }
             break;
         case DEC:
             break;
@@ -377,139 +460,63 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 
 /************************************************************/
 /*                                                          */
-/* FLAG REGISTER FUNCTIONS                                  */
-/*                                                          */
-/************************************************************/
-
-void set_z_flag(CPU *cpu, uint8_t z) {
-    uint8_t is_zero = !z;
-    if (is_zero) {
-        cpu->next_state.F |= FLAG_Z_MASK;
-    } else {
-        cpu->next_state.F &= ~FLAG_Z_MASK;
-    }
-}
-
-void set_n_flag(CPU *cpu, uint8_t n) {
-    if (n == 1) {
-        cpu->next_state.F |= FLAG_N_MASK;
-    } else {
-        cpu->next_state.F &= ~FLAG_N_MASK;
-    }
-}
-
-void set_h_flag(CPU *cpu, uint8_t h) {
-    if (h == 1) {
-        cpu->next_state.F |= FLAG_H_MASK;
-    } else {
-        cpu->next_state.F &= ~FLAG_H_MASK;
-    }
-}
-
-void set_c_flag(CPU *cpu, uint8_t c) {
-    if (c == 1) {
-        cpu->next_state.F |= FLAG_C_MASK;
-    } else {
-        cpu->next_state.F &= ~FLAG_C_MASK;
-    }
-}
-
-void set_flags(CPU *cpu, uint8_t flag_mask, uint8_t z, uint8_t n, uint8_t h, uint8_t c) {
-    if (flag_mask & FLAG_Z_MASK) {
-        set_z_flag(cpu, z);
-    }
-    if (flag_mask & FLAG_N_MASK) {
-        set_n_flag(cpu, n);
-    }
-    if (flag_mask & FLAG_H_MASK) {
-        set_h_flag(cpu, h);
-    }
-    if (flag_mask & FLAG_C_MASK) {
-        set_c_flag(cpu, c);
-    }
-}
-
-uint8_t detect_half_carry(uint8_t op1, uint8_t op2) {
-    op1 &= 0xF;
-    op2 &= 0xF;
-
-    uint8_t sum = op1 + op2;
-
-    return (sum & 0x10) == 0x10;
-}
-
-uint8_t detect_carry(uint8_t op1, uint8_t op2, uint8_t is_CP) {
-    if (is_CP) {
-        return op1 < op2;
-    } else {
-        op1 &= 0xFF;
-        op2 &= 0xFF;
-
-        uint16_t sum = op1 + op2;
-        
-        return (sum & 0x100) == 0x100;
-    }
-}
-
-/************************************************************/
-/*                                                          */
 /* INSTRUCTION IMPLEMENTATIONS                              */
 /*                                                          */
 /************************************************************/
 
-uint8_t execute_nop(CPU *cpu) {
-    cpu->next_state.PC = cpu->current_state.PC + 1;
-    return 4;
-}
+// uint8_t execute_nop(CPU *cpu) {
+//     cpu->next_state.PC = cpu->current_state.PC + 1;
+//     return 4;
+// }
 
-uint8_t execute_ld_bc_d16(CPU *cpu, int16_t immediate) {
-    cpu->next_state.BC = immediate;
-    cpu->next_state.PC = cpu->current_state.PC + 3;
-    return 12;
-}
+// uint8_t execute_ld_bc_d16(CPU *cpu, int16_t immediate) {
+//     cpu->next_state.BC = immediate;
+//     cpu->next_state.PC = cpu->current_state.PC + 3;
+//     return 12;
+// }
 
-uint8_t execute_ld_ref_bc_a(CPU *cpu) {
-    cpu->next_state.BC = cpu->current_state.A;
-    cpu->next_state.PC = cpu->current_state.PC + 1;
-    return 4;
-}
+// uint8_t execute_ld_ref_bc_a(CPU *cpu) {
+//     cpu->next_state.BC = cpu->current_state.A;
+//     cpu->next_state.PC = cpu->current_state.PC + 1;
+//     return 4;
+// }
 
-uint8_t execute_inc_bc(CPU *cpu) {
-    cpu->next_state.BC++;
-    cpu->next_state.PC = cpu->current_state.PC + 1;
-    return 4;
-}
+// uint8_t execute_inc_bc(CPU *cpu) {
+//     cpu->next_state.BC++;
+//     cpu->next_state.PC = cpu->current_state.PC + 1;
+//     return 4;
+// }
 
-uint8_t execute_inc_b(CPU *cpu) {
-    cpu->next_state.B++;
-    cpu->next_state.PC = cpu->current_state.PC + 1;
-    uint8_t half_carry = detect_half_carry(cpu->current_state.B, 1);
-    set_flags(cpu,
-            (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
-            cpu->next_state.B,
-            0,
-            half_carry,
-            0);
-    return 4;
-}
+// uint8_t execute_inc_b(CPU *cpu) {
+//     cpu->next_state.B++;
+//     cpu->next_state.PC = cpu->current_state.PC + 1;
+//     uint8_t half_carry = detect_half_carry(cpu->current_state.B, 1);
+//     set_flags(cpu,
+//             (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
+//             cpu->next_state.B,
+//             0,
+//             half_carry,
+//             0);
+//     return 4;
+// }
 
-uint8_t execute_dec_b(CPU *cpu) {
-    cpu->next_state.B--;
-    uint8_t half_carry = detect_half_carry(cpu->current_state.B, -1);
-    cpu->next_state.PC = cpu->current_state.PC + 1;
-    set_flags(cpu,
-            (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
-            cpu->next_state.B,
-            0,
-            half_carry,
-            0);
-    return 4;
-}
+// uint8_t execute_dec_b(CPU *cpu) {
+//     cpu->next_state.B--;
+//     uint8_t half_carry = detect_half_carry(cpu->current_state.B, -1);
+//     cpu->next_state.PC = cpu->current_state.PC + 1;
+//     set_flags(cpu,
+//             (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
+//             cpu->next_state.B,
+//             0,
+//             half_carry,
+//             0);
+//     return 4;
+// }
 
-uint8_t execute_jp_a16(CPU *cpu, uint16_t immediate) {
-    cpu->next_state.PC = immediate;
-    return 16;
-}
+// uint8_t execute_jp_a16(CPU *cpu, uint16_t immediate) {
+//     cpu->next_state.PC = immediate;
+//     return 16;
+// }
 
 /************************************************************/
 /*                                                          */
