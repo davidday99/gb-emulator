@@ -35,7 +35,7 @@ const Instruction INSTRUCTIONS[] = {
     {"NA"},
     {"NA"},
     {"NA"},
-    {"NA"},
+    {"INC SP", OPCODE_INC_SP, SP, REGISTER, NONE, NA, INC, ALU, UNCONDITIONAL, 0, 1},
     {"NA"},
     {"NA"},
     {"NA"},
