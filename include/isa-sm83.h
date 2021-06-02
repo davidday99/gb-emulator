@@ -623,9 +623,13 @@ enum operation {
     DI,
     EI,
     RLCA,
+    RLC,
     RLA,
+    RL,
     RRCA,
+    RRC,
     RRA,
+    RR,
     RLC,
     RL,
     RRC,
@@ -645,7 +649,7 @@ enum operation {
 };
 
 enum operation_type {
-    MEMORY,
+    LD_ST_MOV,
     ALU,
     SHIFTER,
     BITWISE,

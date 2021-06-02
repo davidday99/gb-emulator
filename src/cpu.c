@@ -118,10 +118,12 @@ void write_register(CPU *cpu, enum operand reg, uint16_t value) {
 
 uint8_t read_memory(CPU *cpu, uint16_t address) {
     return cpu->RAM[address];
+    cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
 }
 
 void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
     cpu->RAM[address] = value;
+    cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
 }
 
 /************************************************************/
@@ -178,7 +180,7 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
         case NA:
             op = 0;
             break;
-            
+
         default:
             break;
     }
@@ -587,7 +589,7 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation_type) {
-        case MEMORY:
+        case LD_ST_MOV:
             break;
         case ALU:
             break;

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define RAM_SIZE 0x10000
+#define MEM_CYCLE_DELAY 4
 
 typedef struct Core {
     union {
