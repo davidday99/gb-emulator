@@ -326,6 +326,8 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
         case OR:
             break;
         case XOR:
+            write_register(cpu, instruction->destination, dest ^ src);
+            set_flags(cpu, FLAG_Z_MASK, dest ^ src, 0 , 0, 0);
             break;
         default:
             break;

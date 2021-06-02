@@ -177,7 +177,7 @@ const Instruction INSTRUCTIONS[] = {
     {"NA"},
     {"NA"},
     {"NA"},
-    {"NA"},
+    {"XOR A", OPCODE_XOR_A, A, REGISTER, A, REGISTER, XOR, ALU, UNCONDITIONAL, 0, 1},
     {"NA"},
     {"NA"},
     {"NA"},
