@@ -313,7 +313,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             break;
         case INC:
             write_register(cpu, instruction->destination, dest + 1);
-            if (instruction->destination <= L) {
+            if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
                 set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, dest + 1, 0);
             }
             break;
@@ -326,9 +326,14 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
         case OR:
             break;
         case XOR:
+            write_register(cpu, instruction->destination, dest ^ src);
+            set_flags(cpu, FLAG_Z_MASK, dest ^ src, 0 , 0, 0);
             break;
         default:
             break;
+    }
+    if (instruction->destination >= AF && instruction->destination <= SP && instruction->destination_type == REGISTER) {
+        cpu->next_state.CYCLE_COUNT += ALU_DELAY_16_BIT;
     }
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
@@ -664,6 +669,7 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
         default:
             break;
     }
+    cpu->next_state.CYCLE_COUNT += instruction->unaccounted_cycles;  // add any cycles that weren't covered by memory R/W
 }
 
 void simulate_cycles(CPU *cpu) {
