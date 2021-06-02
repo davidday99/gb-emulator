@@ -68,7 +68,10 @@ void simulate(CPU *cpu) {
 int main() {
     CPU cpu;
 
-    FILE *f = fopen("games/test.gb", "rb");
+    uint16_t x = 1;
+    x++;
+
+    FILE *f = fopen("games\\test.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");

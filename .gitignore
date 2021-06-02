@@ -1,8 +1,9 @@
 # VSCode
 .vscode/
 
-# Executables directory
+# Executables
 bin/
+*.exe
 
 # Misc
 *.swp
