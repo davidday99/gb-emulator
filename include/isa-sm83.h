@@ -9,10 +9,11 @@
 #define FLAG_C_MASK 0x10
 #define NO_FLAGS 0
 
-#define NUM_INSTRUCTIONS_NON_CB 244
-#define NUM_INSTRUCTIONS_CB 256
+#define NUM_OPCODES 256
 
 /* OPCODES */
+
+#define CB_PREFIX 0xC3
 
 /* Non-CB */
 
@@ -667,13 +668,12 @@ typedef struct Instruction {
     enum operation operation;
     enum operation_type operation_type;
     enum condition condition;
-    uint8_t action_taken_cycles;
-    uint8_t action_not_taken_cycles;
+    uint8_t unaccounted_cycles;
     uint8_t bytes;
 } Instruction;
 
-extern const Instruction INSTRUCTIONS[NUM_INSTRUCTIONS_NON_CB];
+extern const Instruction INSTRUCTIONS[NUM_OPCODES];
 
-extern const Instruction CB_INSTRUCTIONS[NUM_INSTRUCTIONS_CB];
+extern const Instruction CB_INSTRUCTIONS[NUM_OPCODES];
 
 #endif /* ISA_SM83_H */

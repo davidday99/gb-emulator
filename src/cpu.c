@@ -132,7 +132,7 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
 /*                                                          */
 /************************************************************/
 
-uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode, uint8_t is_CB) {
+uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
     uint16_t op;
     switch (addr_mode) {
         case REGISTER:
@@ -153,25 +153,25 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
 
         case IMMEDIATE_MEM:
             if (operand == A8) {
-                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB];
+                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1];
             } else if (operand == D8) {
-                op = (int8_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB];
+                op = (int8_t) cpu->RAM[cpu->current_state.PC + 1];
             } else if (operand == A16) {
-                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB] | 
-                        (cpu->RAM[cpu->current_state.PC + 2 + is_CB] << 8);
+                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1] | 
+                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
             } else if (operand == D16) {
-                op = (int16_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB] | 
-                        (cpu->RAM[cpu->current_state.PC + 2 + is_CB] << 8);
+                op = (int16_t) cpu->RAM[cpu->current_state.PC + 1] | 
+                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
             }
             break;
 
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
-                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB];
+                op = (uint8_t) cpu->RAM[cpu->current_state.PC + 1];
                 op += 0xFF00;
             } else if (operand == A16) {
-                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1 + is_CB] | 
-                        (cpu->RAM[cpu->current_state.PC + 2 + is_CB] << 8);
+                op = (uint16_t) cpu->RAM[cpu->current_state.PC + 1] | 
+                        (cpu->RAM[cpu->current_state.PC + 2] << 8);
                 op = cpu->RAM[op];
             } 
 
@@ -220,14 +220,18 @@ void handle_memory_operation(CPU *cpu, Instruction *instruction, uint16_t dest, 
 void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case ADD:
+            write_register(cpu, instruction->destination, dest + src);
+            //set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src, 0, detect_half_carry(dest, src), detect_carry(dest, src, ))
             break;
         case ADC:
+
             break;
         case SUB:
             break;
         case SBC:
             break;
         case INC:
+            write_register(cpu, instruction->destination, dest + 1);
             break;
         case DEC:
             break;
@@ -352,6 +356,8 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case DI:
             break;
         case EI:
+            break;
+        case CB_PREFIX:
             break;
         case HALT:
             break;
@@ -510,6 +516,42 @@ uint8_t execute_jp_a16(CPU *cpu, uint16_t immediate) {
 
 /************************************************************/
 /*                                                          */
+/* Procedure : enable_cb_mode                               */
+/*                                                          */
+/* Purpose   : Enable CB Mode when a CB prefix is fetched   */ 
+/*                                                          */
+/************************************************************/
+
+void enable_cb_mode(CPU *cpu) {
+    cpu->CB_mode == 1;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : disable_cb_mode                              */
+/*                                                          */
+/* Purpose   : Disable CB Mode after a CB instruction       */ 
+/*             is executed                                  */
+/*                                                          */
+/************************************************************/
+
+void disable_cb_mode(CPU *cpu) {
+    cpu->CB_mode == 0;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : toggle_cb_mode                               */
+/*                                                          */
+/* Purpose   : Toggle CB Mode                               */ 
+/*                                                          */
+/************************************************************/
+void toggle_cb_mode(CPU *cpu) {
+    cpu->CB_mode = !cpu->CB_mode;
+}
+
+/************************************************************/
+/*                                                          */
 /* Procedure : dump_registers                               */
 /*                                                          */
 /* Purpose   : dump value of each CPU register              */ 
@@ -574,17 +616,20 @@ uint8_t fetch(CPU *cpu) {
 /************************************************************/
 
 void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction *instruction) {
-    uint8_t is_CB = 0;
-    if (opcode == 0xCB) {
-        opcode = cpu->RAM[cpu->current_state.PC + 1];
+    if (cpu->CB_mode == 1) {
         *instruction = CB_INSTRUCTIONS[opcode];
-        is_CB = 1;
     } else {
         *instruction = INSTRUCTIONS[opcode];
     }
 
-    *dest = get_operand(cpu, instruction->destination, instruction->destination_type, is_CB);
-    *src = get_operand(cpu, instruction->source, instruction->source_type, is_CB);
+    if (instruction->opcode == OPCODE_PREFIX_CB && cpu->CB_mode == 0) {
+        enable_cb_mode(cpu);
+    } else {
+        disable_cb_mode(cpu);
+    }
+
+    *dest = get_operand(cpu, instruction->destination, instruction->destination_type);
+    *src = get_operand(cpu, instruction->source, instruction->source_type);
 }
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
