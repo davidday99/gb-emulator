@@ -20,8 +20,11 @@ def dump_file(filename):
     line = []
     with open(filename, 'rb') as file:
         file.seek(0)
-        for byte in iter(lambda: file.read(1), b''):
+        while True:
             if len(line) < 16:
+                byte = file.read(1)
+                if not byte:
+                    break
                 line.append(byte)
             else:
                 output = ' '.join(['0x{:08x}'.format(address), ' '.join('{:02x}'.format(ord(b)) for b in line), print_mem_view(line)])
