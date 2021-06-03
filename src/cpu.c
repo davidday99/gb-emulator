@@ -417,19 +417,41 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
 }
 
 void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+    uint16_t temp;
     switch (instruction->operation) {
         case CALL:
+            cpu->next_state.SP -= 1;
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->next_state.SP);
+            cpu->next_state.SP -= 1;
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->next_state.SP);
+            cpu->next_state.PC = dest;
             break;
         case JP:
             cpu->next_state.PC = dest;
             break;
         case JR:
+            dest = (int8_t) dest;
+            cpu->next_state.PC = cpu->current_state.PC + instruction->bytes + dest;
             break;
         case RET:
+            temp = read_memory(cpu, cpu->current_state.SP) |
+                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
+            cpu->next_state.SP += 2;
+            cpu->next_state.PC = temp;
             break;
         case RETI:
+            temp = read_memory(cpu, cpu->current_state.SP) |
+                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
+            cpu->next_state.SP += 2;
+            cpu->next_state.PC = temp;
+            enable_interrupts(cpu);
             break;
         case RST:
+            cpu->next_state.SP -= 1;
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->next_state.SP);
+            cpu->next_state.SP -= 1;
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->next_state.SP);
+            cpu->next_state.PC = dest;
             break;
         default:
             break;
@@ -463,66 +485,6 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
     }
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
-
-/************************************************************/
-/*                                                          */
-/* INSTRUCTION IMPLEMENTATIONS                              */
-/*                                                          */
-/************************************************************/
-
-// uint8_t execute_nop(CPU *cpu) {
-//     cpu->next_state.PC = cpu->current_state.PC + 1;
-//     return 4;
-// }
-
-// uint8_t execute_ld_bc_d16(CPU *cpu, int16_t immediate) {
-//     cpu->next_state.BC = immediate;
-//     cpu->next_state.PC = cpu->current_state.PC + 3;
-//     return 12;
-// }
-
-// uint8_t execute_ld_ref_bc_a(CPU *cpu) {
-//     cpu->next_state.BC = cpu->current_state.A;
-//     cpu->next_state.PC = cpu->current_state.PC + 1;
-//     return 4;
-// }
-
-// uint8_t execute_inc_bc(CPU *cpu) {
-//     cpu->next_state.BC++;
-//     cpu->next_state.PC = cpu->current_state.PC + 1;
-//     return 4;
-// }
-
-// uint8_t execute_inc_b(CPU *cpu) {
-//     cpu->next_state.B++;
-//     cpu->next_state.PC = cpu->current_state.PC + 1;
-//     uint8_t half_carry = detect_half_carry(cpu->current_state.B, 1);
-//     set_flags(cpu,
-//             (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
-//             cpu->next_state.B,
-//             0,
-//             half_carry,
-//             0);
-//     return 4;
-// }
-
-// uint8_t execute_dec_b(CPU *cpu) {
-//     cpu->next_state.B--;
-//     uint8_t half_carry = detect_half_carry(cpu->current_state.B, -1);
-//     cpu->next_state.PC = cpu->current_state.PC + 1;
-//     set_flags(cpu,
-//             (FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK),
-//             cpu->next_state.B,
-//             0,
-//             half_carry,
-//             0);
-//     return 4;
-// }
-
-// uint8_t execute_jp_a16(CPU *cpu, uint16_t immediate) {
-//     cpu->next_state.PC = immediate;
-//     return 16;
-// }
 
 /************************************************************/
 /*                                                          */
@@ -564,6 +526,30 @@ void disable_cb_mode(CPU *cpu) {
 /************************************************************/
 void toggle_cb_mode(CPU *cpu) {
     cpu->CB_mode = !cpu->CB_mode;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : enable_interrupts                            */
+/*                                                          */
+/* Purpose   : Enable CPU interrupts                        */ 
+/*                                                          */
+/************************************************************/
+
+void enable_interrupts(CPU *cpu) {
+    cpu->enable_interrupts == 1;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : disable_interrupts                           */
+/*                                                          */
+/* Purpose   : Disable CPU interrupts                       */
+/*                                                          */
+/************************************************************/
+
+void disable_interrupts(CPU *cpu) {
+    cpu->enable_interrupts == 0;
 }
 
 /************************************************************/

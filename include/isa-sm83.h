@@ -13,8 +13,6 @@
 
 /* OPCODES */
 
-#define CB_PREFIX 0xC3
-
 /* Non-CB */
 
 #define OPCODE_NOP 0
@@ -642,7 +640,8 @@ enum operation {
     CALL,
     RST,
     RET,
-    RETI
+    RETI,
+    CB_PREFIX
 };
 
 enum operation_type {
