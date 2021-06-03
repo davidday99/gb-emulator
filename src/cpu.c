@@ -215,11 +215,11 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
     uint16_t op;
     switch (addr_mode) {
         case REGISTER:
-            op = get_register_value(cpu, operand);
+            op = operand;
             break;
 
         case REGISTER_INDIRECT:
-            op = read_memory(cpu, get_register_value(cpu, operand));
+            op = get_register_value(cpu, operand);
 
             if (operand == C) {
                 op += 0xFF00;
@@ -636,7 +636,7 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 
     *dest = get_operand(cpu, instruction->destination, instruction->destination_type);
     *src = get_operand(cpu, instruction->source, instruction->source_type);
-    
+
 #ifdef DEBUG
     if (instruction->source_type == IMMEDIATE_MEM) {
         printf(instruction->mnemonic, *src);
