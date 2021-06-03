@@ -633,8 +633,19 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
         disable_cb_mode(cpu);
     }
 
+#ifdef DEBUG
     *dest = get_operand(cpu, instruction->destination, instruction->destination_type);
     *src = get_operand(cpu, instruction->source, instruction->source_type);
+
+    if (instruction->source_type == IMMEDIATE_MEM) {
+        printf(instruction->mnemonic, *src);
+    } else if (instruction->destination_type == IMMEDIATE_MEM) {
+        printf(instruction->mnemonic, *dest);
+    } else {
+        printf(instruction->mnemonic);
+    }
+    printf("\n");
+#endif
 }
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {

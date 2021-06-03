@@ -47,7 +47,7 @@ void simulate(CPU *cpu) {
             }
             cycles = strtol(start, &end, 10);
             while (cycles > 0) {
-                printf("Opcode: 0x%02X\n", step(cpu));
+                step(cpu);
                 cycles--;
             }
             break;

@@ -10,10 +10,10 @@ CFLAGS = -I$(INCLUDE)
 all: $(ODIR)/simulator
 
 $(ODIR)/%.o: $(SRC)/%.c
-	$(CC) -o $@ $^ $(CFLAGS) -c
+	$(CC) -o $@ $^ $(CFLAGS) -c -g $(debug)
 
 $(ODIR)/simulator: $(OBJS)
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -g
 
 clean:
 	rm -rf $(ODIR)/*
