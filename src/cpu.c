@@ -189,6 +189,27 @@ uint8_t detect_carry(uint8_t op1, uint8_t op2, uint8_t is_CP) {
     }
 }
 
+uint8_t check_condition(CPU *cpu, enum condition cc) {
+    uint8_t cond = 0;
+    switch (cc) {
+        case UNCONDITIONAL:
+            cond = 1;
+            break;
+        case NZ:
+            cond = (cpu->current_state.F & FLAG_Z_MASK) == 0;
+            break;
+        case Z:
+            cond = (cpu->current_state.F & FLAG_Z_MASK) != 0;
+            break;
+        case NC:
+            cond = (cpu->current_state.F & FLAG_C_MASK) == 0;
+            break;
+        case CARRY:
+            cond = (cpu->current_state.F & FLAG_C_MASK) != 0;
+    }
+    return cond;
+}
+
 /************************************************************/
 /*                                                          */
 /* MEMORY ACCESS FUNCTIONS                                  */
@@ -650,6 +671,12 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 }
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+    if ((instruction->condition != UNCONDITIONAL) && 
+        check_condition(cpu, instruction->condition) == 0) {
+            cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+            return;
+    }
+
     switch (instruction->operation_type) {
         case LD_ST_MOV:
             handle_ld_st_mov_operation(cpu, instruction, dest, src);
