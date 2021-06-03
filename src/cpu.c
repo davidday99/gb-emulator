@@ -11,6 +11,9 @@
 #define Low16bits(x) ((x) & 0xFFFF)
 #define Low8bits(x) ((x) & 0xFF)
 
+void enable_interrupts(CPU *cpu);
+void disable_interrupts(CPU *cpu);
+
 /************************************************************/
 /*                                                          */
 /* REGISTER ACCESS FUNCTIONS                                */

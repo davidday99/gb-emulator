@@ -1,26 +1,23 @@
-
 CC=gcc
-INC=include
+INCLUDE=include
 SRC=src
 ODIR=build
-CFLAGS=-I $(INC)
 
-DEPS=$(wildcard include/*.h)
+SRCS = $(wildcard $(SRC)/*.c)
+OBJS = $(addprefix $(ODIR)/,$(notdir $(SRCS:.c=.o)))
+CFLAGS = -I$(INCLUDE)
 
-OBJ = $(patsubst $(SRC)/%.c, $(ODIR)/%.o, $(wildcard $(SRC)/*.c))
+all: $(ODIR)/simulator
 
-$(ODIR)/%.o: $(SRC)/%.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(ODIR)/%.o: $(SRC)/%.c
+	$(CC) -o $@ $^ $(CFLAGS) -c
 
-simulator: $(OBJ)
-	$(CC) -o $(ODIR)/$@ $^ $(CFLAGS)
-
-$(OBJ): | $(ODIR)
-
-$(ODIR):
-	mkdir $(ODIR)
-
-.PHONY: clean
+$(ODIR)/simulator: $(OBJS)
+	$(CC) -o $@ $^
 
 clean:
-	rm -f $(ODIR)
+	rm -rf $(ODIR)/*
+
+$(shell mkdir -p $(ODIR))
+
+.PHONY: all clean

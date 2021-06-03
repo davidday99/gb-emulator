@@ -1,104 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "../include/cpu.h"
-
-enum operand {
-    A,
-    B,
-    C,
-    D,
-    E,
-    H,
-    L,
-    AF,
-    BC,
-    DE,
-    HL,
-    PC,
-    SP,
-    A8,
-    D8,
-    A16,
-    D16,
-    NONE
-};
-
-enum addressing_mode {
-    REGISTER,
-    REGISTER_INDIRECT,
-    IMMEDIATE,
-    IMMEDIATE_MEM,
-    IMMEDIATE_MEM_INDIRECT,
-    NA
-};
-
-enum condition {
-    UNCONDITIONAL,
-    NZ,
-    Z,
-    NC,
-    CARRY
-};
-
-
-enum operation {
-    LD,
-    LDD,
-    LDI,
-    LDH,
-    LDHL,
-    PUSH,
-    POP,
-    ADD,
-    ADC,
-    SUB,
-    SBC,
-    AND,
-    OR,
-    XOR,
-    CP,
-    INC,
-    DEC,
-    SWAP,
-    DAA,
-    CPL,
-    CCF,
-    SCF,
-    NOP,
-    HALT,
-    STOP,
-    DI,
-    EI,
-    RLCA,
-    RLA,
-    RRCA,
-    RRA,
-    RLC,
-    RL,
-    RRC,
-    RR,
-    SLA,
-    SRA,
-    SRL,
-    BIT,
-    SET,
-    RES,
-    JP,
-    JR,
-    CALL,
-    RST,
-    RET,
-    RETI
-};
-
-typedef struct Instruction {
-    enum operand destination;
-    enum addressing_mode destination_type;
-    enum operand source;
-    enum addressing_mode source_type;
-    enum condition condition;
-    uint8_t bytes;
-} Instruction;
+#include "../include/isa-sm83.h"
 
 uint16_t get_register_value(enum operand reg, CPU *cpu) {
     uint16_t value;
@@ -146,7 +49,9 @@ uint16_t get_register_value(enum operand reg, CPU *cpu) {
     return value;
 }
 
-int main() {
+int test_get_register_value() {
+    printf("Running test_get_register_value()\n");
+
     CPU cpu;
     cpu.current_state.AF = 0xFFFF;
     cpu.current_state.BC = 0xFFFF;
@@ -162,5 +67,5 @@ int main() {
     assert((uint8_t) get_register_value(H, &cpu) == 0xFF);
     assert((uint8_t) get_register_value(L, &cpu) == 0xFF);
 
-    printf("Test passed.\n");
+    return 0;
 }

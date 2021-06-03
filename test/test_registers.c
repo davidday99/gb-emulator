@@ -3,7 +3,9 @@
 #include "../include/cpu.h"
 
 
-int main() {
+int test_registers() {
+    printf("Running test_registers()\n");
+
     CPU cpu;
 
     /* test 8-bit and 16-bit addressability of register pair BC */
@@ -22,5 +24,5 @@ int main() {
     assert(cpu.current_state.B = 0xBE);
     assert(cpu.current_state.C = 0xEF);
 
-    printf("Test passed.\n");
+    return 0;
 }

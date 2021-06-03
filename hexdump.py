@@ -27,7 +27,12 @@ def dump_file(filename):
                     break
                 line.append(byte)
             else:
-                output = ' '.join(['0x{:08x}'.format(address), ' '.join('{:02x}'.format(ord(b)) for b in line), print_mem_view(line)])
+                output = ' '.join([
+                    '0x{:08x}'.format(address),
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[:8]),
+                    ' ', 
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[8:]),
+                    print_mem_view(line)])
                 print(output)
                 line.clear()
                 address += 0x10
@@ -35,9 +40,20 @@ def dump_file(filename):
     if len(line) > 0:
         spaces = ' ' * (((16 - len(line)) * 3) - 1)
         if spaces == '':
-            output = ' '.join(['0x{:08x}'.format(address), ' '.join('{:02x}'.format(ord(b)) for b in line), print_mem_view(line)])
+            output = ' '.join([
+                    '0x{:08x}'.format(address),
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[:8]),
+                    ' ', 
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[8:]),
+                    print_mem_view(line)])        
         else:
-            output = ' '.join(['0x{:08x}'.format(address), ' '.join('{:02x}'.format(ord(b)) for b in line), spaces, print_mem_view(line)])
+            output = ' '.join([
+                    '0x{:08x}'.format(address),
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[:8]),
+                    ' ', 
+                    ' '.join('{:02x}'.format(ord(b)) for b in line[8:]),
+                    spaces,
+                    print_mem_view(line)])        
         print(output)
 
 
