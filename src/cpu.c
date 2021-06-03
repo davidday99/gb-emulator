@@ -671,10 +671,9 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 }
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
-    if ((instruction->condition != UNCONDITIONAL) && 
-        check_condition(cpu, instruction->condition) == 0) {
-            cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
-            return;
+    if (check_condition(cpu, instruction->condition) == 0) {
+        cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+        return;
     }
 
     switch (instruction->operation_type) {
