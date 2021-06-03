@@ -1,8 +1,8 @@
 # VSCode
 .vscode/
 
-# Executables
-bin/
+# Executables and object files
+build/
 *.exe
 
 # Misc
