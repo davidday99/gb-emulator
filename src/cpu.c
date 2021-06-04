@@ -384,6 +384,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
         case AND:
             break;
         case CP:
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, dest - src, 1, detect_half_carry(dest, -src), detect_carry(dest, src, 1));
             break;
         case OR:
             break;
