@@ -20,6 +20,27 @@ void disable_interrupts(CPU *cpu);
 /*                                                          */
 /************************************************************/
 
+int16_t sign_adjust(uint16_t value, enum operand op) {
+    int16_t adjusted;
+    switch (op) {
+        case A8:
+            adjusted = (uint8_t) value;
+            break;
+        case D8:
+            adjusted = (int8_t) value;
+            break;
+        case A16:
+            adjusted = value;
+            break;
+        case D16:
+            adjusted = (int16_t) value;
+            break;
+        default:
+            break;
+    }
+    return adjusted;
+}
+
 uint16_t get_register_value(CPU *cpu, enum operand reg) {
     uint16_t value;
     switch (reg) {
@@ -66,10 +87,13 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
     return value;
 }
 
-void write_register(CPU *cpu, enum operand reg, uint16_t value) {
+void write_register(CPU *cpu, enum operand reg, int16_t value) {
     if (reg <= L) {
         value = (uint8_t) value;
+    } else {
+        value = (uint16_t) value;
     }
+
     switch (reg) {
         case A:
             cpu->next_state.A = value;
@@ -232,11 +256,11 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
 /*                                                          */
 /************************************************************/
 
-uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
-    uint16_t op;
+int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
+    int16_t op;
     switch (addr_mode) {
         case REGISTER:
-            op = operand;
+            op = get_register_value(cpu, operand);
             break;
 
         case REGISTER_INDIRECT:
@@ -287,7 +311,7 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
     return op;
 }
 
-void exec_ld(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     if (instruction->destination_type == REGISTER) {
         write_register(cpu, instruction->destination, src);
     } else if (instruction->destination_type == REGISTER_INDIRECT || 
@@ -296,7 +320,7 @@ void exec_ld(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     }
 }
 
-void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     switch (instruction->operation) {
         case LD:
             exec_ld(cpu, instruction, dest, src);
@@ -318,7 +342,7 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t des
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
-void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     switch (instruction->operation) {
         case ADD:
             write_register(cpu, instruction->destination, dest + src);
@@ -338,10 +362,14 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
         case INC:
             write_register(cpu, instruction->destination, dest + 1);
             if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
-                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, dest + 1, 0);
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, detect_half_carry(dest, 1), 0);
             }
             break;
         case DEC:
+            write_register(cpu, instruction->destination, dest - 1);
+            if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest - 1, 1, detect_half_carry(dest, -1), 0);
+            }
             break;
         case AND:
             break;
@@ -440,7 +468,7 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
     }
 }
 
-void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void handle_jump_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     uint16_t temp;
     switch (instruction->operation) {
         case CALL:
@@ -641,7 +669,7 @@ uint8_t fetch(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 
-void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction *instruction) {
+void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *instruction) {
     if (cpu->CB_mode == 1) {
         *instruction = CB_INSTRUCTIONS[opcode];
     } else {
@@ -670,7 +698,7 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 #endif
 }
 
-void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+void execute(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     if (check_condition(cpu, instruction->condition) == 0) {
         cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
         return;
@@ -715,7 +743,7 @@ void simulate_cycles(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 uint8_t step(CPU *cpu) {
-    uint16_t dest, src;
+    int16_t dest, src;
     Instruction instruction;
     uint8_t opcode = fetch(cpu);
     decode(cpu, opcode, &dest, &src, &instruction);

@@ -34,7 +34,7 @@ const Instruction INSTRUCTIONS[] = {
     {"NA"},
     {"NA"},
     {"NA"},
-    {"JP NZ,%d", OPCODE_JR_NZ_R8, NONE, NA, D8, IMMEDIATE_MEM, JP, JUMP, NZ, 0, 2},
+    {"JR NZ,%d", OPCODE_JR_NZ_R8, D8, IMMEDIATE_MEM, NONE, NA, JR, JUMP, NZ, 0, 2},
     {"LD HL,%d", OPCODE_LD_HL_D16, HL, REGISTER, D16, IMMEDIATE_MEM, LD, LD_ST_MOV, UNCONDITIONAL, 0, 3},
     {"NA"},
     {"NA"},
