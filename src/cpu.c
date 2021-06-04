@@ -41,8 +41,8 @@ int16_t sign_adjust(uint16_t value, enum operand op) {
     return adjusted;
 }
 
-uint16_t get_register_value(CPU *cpu, enum operand reg) {
-    uint16_t value;
+int16_t get_register_value(CPU *cpu, enum operand reg) {
+    int16_t value;
     switch (reg) {
         case A:
             value = cpu->current_state.A;
@@ -84,14 +84,17 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
             value = cpu->current_state.SP;
             break;
     }
+    if (reg <= L) {
+        value = (int8_t) value;
+    }
     return value;
 }
 
 void write_register(CPU *cpu, enum operand reg, int16_t value) {
     if (reg <= L) {
-        value = (uint8_t) value;
+        value = Low8bits(value);
     } else {
-        value = (uint16_t) value;
+        value = Low16bits(value);
     }
 
     switch (reg) {
@@ -256,7 +259,7 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
 /*                                                          */
 /************************************************************/
 
-int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
+int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode, uint8_t is_dest) {
     int16_t op;
     switch (addr_mode) {
         case REGISTER:
@@ -296,7 +299,7 @@ int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mo
             } else if (operand == A16) {
                 op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
                         (read_memory(cpu, cpu->current_state.PC + 2) << 8);
-                op = read_memory(cpu, op);
+                op = is_dest ? op : read_memory(cpu, op);  // don't read from memory unless source operand
             } 
 
             break;
@@ -316,7 +319,7 @@ void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
         write_register(cpu, instruction->destination, src);
     } else if (instruction->destination_type == REGISTER_INDIRECT || 
                 instruction->destination_type == IMMEDIATE_MEM_INDIRECT) {
-        write_memory(cpu, dest, src);
+        write_memory(cpu, src, dest);
     }
 }
 
@@ -391,6 +394,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
 }
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+    uint16_t temp = 0;
     switch (instruction->operation) {
         case RL:
             break;
@@ -407,6 +411,13 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
         case RRC:
             break;
         case RRCA:
+            dest = Low8bits(dest);
+            temp = cpu->current_state.F & FLAG_C_MASK;
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
+
+            dest >>= 1;
+            dest |= (temp << 3);
+            write_register(cpu, instruction->destination, dest); 
             break;
         case SLA:
             break;
@@ -417,6 +428,7 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
         default:
             break;
     }
+    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
 void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -519,8 +531,10 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case DAA:
             break;
         case DI:
+            disable_interrupts(cpu);
             break;
         case EI:
+            enable_interrupts(cpu);
             break;
         case CB_PREFIX:
             break;
@@ -606,6 +620,26 @@ void disable_interrupts(CPU *cpu) {
 
 /************************************************************/
 /*                                                          */
+/* Procedure : init_cpu                                     */
+/*                                                          */
+/* Purpose   : initialize CPU default values                */ 
+/*                                                          */
+/************************************************************/
+void init_cpu(CPU *cpu) {
+    cpu->current_state.AF = 0;
+    cpu->current_state.BC = 0;
+    cpu->current_state.DE = 0;
+    cpu->current_state.HL = 0;
+    cpu->current_state.PC = 0;
+    cpu->current_state.SP = 0;
+    cpu->current_state.CYCLE_COUNT = 0;
+
+    cpu->next_state = cpu->current_state;
+    cpu->CB_mode = 0;
+}
+
+/************************************************************/
+/*                                                          */
 /* Procedure : dump_registers                               */
 /*                                                          */
 /* Purpose   : dump value of each CPU register              */ 
@@ -683,8 +717,8 @@ void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *
     }
 
 
-    *dest = get_operand(cpu, instruction->destination, instruction->destination_type);
-    *src = get_operand(cpu, instruction->source, instruction->source_type);
+    *dest = get_operand(cpu, instruction->destination, instruction->destination_type, 1);
+    *src = get_operand(cpu, instruction->source, instruction->source_type, 0);
 
 #ifdef DEBUG
     if (instruction->source_type == IMMEDIATE_MEM) {
