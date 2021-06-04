@@ -295,7 +295,7 @@ int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mo
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
                 op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
-                op += 0xFF00;
+                //op += 0xFF00;
             } else if (operand == A16) {
                 op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
                         (read_memory(cpu, cpu->current_state.PC + 2) << 8);
@@ -337,6 +337,7 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest
             cpu->next_state.HL++;
             break;
         case LDH:
+            dest += 0xFF00;
             exec_ld(cpu, instruction, dest, src);
             break;
         default:
@@ -721,10 +722,12 @@ void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *
     *src = get_operand(cpu, instruction->source, instruction->source_type, 0);
 
 #ifdef DEBUG
-    if (instruction->source_type == IMMEDIATE_MEM) {
-        printf(instruction->mnemonic, *src);
-    } else if (instruction->destination_type == IMMEDIATE_MEM) {
-        printf(instruction->mnemonic, *dest);
+    if (instruction->source_type == IMMEDIATE_MEM || 
+        instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
+            printf(instruction->mnemonic, *src);
+    } else if (instruction->destination_type == IMMEDIATE_MEM ||
+        instruction->destination_type == IMMEDIATE_MEM_INDIRECT) {
+            printf(instruction->mnemonic, *dest);
     } else {
         printf(instruction->mnemonic);
     }
