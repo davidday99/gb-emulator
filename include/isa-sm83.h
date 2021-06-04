@@ -275,7 +275,7 @@
 #define OPCODE_LD_A_REF_A16 0xFA
 #define OPCODE_EI 0xFB
 
-#define OPCODE_CP 0xFE
+#define OPCODE_CP_D8 0xFE
 #define OPCODE_RST_38H 0xFF 
 
 /* CB-Prefixed */
