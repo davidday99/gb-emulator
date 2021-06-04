@@ -226,7 +226,7 @@ const Instruction INSTRUCTIONS[] = {
     {"NA"},
     {"NA"},
     {"NA"},
-    {"LDH %u,A", OPCODE_LDH_REF_A8_A, A8, IMMEDIATE_MEM_INDIRECT, A, REGISTER, LDH, LD_ST_MOV, UNCONDITIONAL, 0, 2},
+    {"LDH %#2X,A", OPCODE_LDH_REF_A8_A, A8, IMMEDIATE_MEM_INDIRECT, A, REGISTER, LDH, LD_ST_MOV, UNCONDITIONAL, 0, 2},
     {"NA"},
     {"NA"},
     {"NA"},
