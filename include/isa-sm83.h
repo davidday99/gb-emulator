@@ -262,7 +262,7 @@
 #define OPCODE_XOR_D8 0xEE
 #define OPCODE_RST_28H 0xEF
 
-#define OPCODE_LD_A_REF_A8 0xF0
+#define OPCODE_LDH_A_REF_A8 0xF0
 #define OPCODE_POP_AF 0xF1
 #define OPCODE_LD_A_REF_C 0xF2
 #define OPCODE_DI 0xF3
