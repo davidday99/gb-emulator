@@ -54,6 +54,7 @@ typedef struct CPU {
     uint8_t enable_interrupts;
 } CPU;
 
+void init_cpu(CPU *cpu);
 uint8_t step(CPU *cpu);
 void step_n(uint32_t n, CPU *cpu);
 void run(CPU *cpu);

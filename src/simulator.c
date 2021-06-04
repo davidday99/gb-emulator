@@ -68,6 +68,8 @@ void simulate(CPU *cpu) {
 int main() {
     CPU cpu;
 
+    init_cpu(&cpu);
+
     uint16_t x = 1;
     x++;
 
