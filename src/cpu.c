@@ -13,6 +13,10 @@
 
 void enable_interrupts(CPU *cpu);
 void disable_interrupts(CPU *cpu);
+void enable_cb_mode(CPU *cpu);
+void disable_cb_mode(CPU *cpu);
+void start_cpu(CPU *cpu);
+void stop_cpu(CPU *cpu);
 
 /************************************************************/
 /*                                                          */
