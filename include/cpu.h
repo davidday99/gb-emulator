@@ -5,6 +5,7 @@
 
 #define RAM_SIZE 0x10000
 #define MEM_CYCLE_DELAY 4
+#define JUMP_DELAY 4
 #define ALU_DELAY_16_BIT 4 
 
 typedef struct Core {
