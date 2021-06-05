@@ -407,24 +407,41 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
         case RL:
             break;
         case RLA:
+            dest = Low8bits(dest);
+            temp = cpu->current_state.F & FLAG_C_MASK;
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
+            dest <<= 1;
+            dest |= (temp >> 4);
+            write_register(cpu, instruction->destination, dest);
             break;
         case RLC:
             break;
         case RLCA:
+            dest = Low8bits(dest);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
+            temp = dest & 0x80;
+            dest <<= 1;
+            dest |= (temp >> 7);
+            write_register(cpu, instruction->destination, dest);
             break;
         case RR:
             break;
         case RRA:
+            dest = Low8bits(dest);
+            temp = cpu->current_state.F & FLAG_C_MASK;
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
+            dest >>= 1;
+            dest |= (temp << 3);
+            write_register(cpu, instruction->destination, dest);
             break;
         case RRC:
             break;
         case RRCA:
             dest = Low8bits(dest);
-            temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
-
+            temp = dest & 1;
             dest >>= 1;
-            dest |= (temp << 3);
+            dest |= (temp << 7);
             write_register(cpu, instruction->destination, dest); 
             break;
         case SLA:
@@ -528,6 +545,7 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, int16_t dest, int
         default:
             break;
     }
+    cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
 }
 
 void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
