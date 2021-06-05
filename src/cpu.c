@@ -553,6 +553,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case SCF:
             break;
         case STOP:
+            stop_cpu(cpu);
             break;
         default:
             break;
@@ -624,6 +625,28 @@ void enable_interrupts(CPU *cpu) {
 
 void disable_interrupts(CPU *cpu) {
     cpu->enable_interrupts == 0;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : start CPU                                    */
+/*                                                          */
+/* Purpose   : Allow CPU to operate normally                */
+/*                                                          */
+/************************************************************/
+void start_cpu(CPU *cpu) {
+    cpu->running = 1;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : stop_cpu                                     */
+/*                                                          */
+/* Purpose   : Halt CPU operation                           */
+/*                                                          */
+/************************************************************/
+void stop_cpu(CPU *cpu) {
+    cpu->running = 0;
 }
 
 /************************************************************/
@@ -787,16 +810,19 @@ void simulate_cycles(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 uint8_t step(CPU *cpu) {
-    int16_t dest, src;
-    Instruction instruction;
-    uint8_t opcode = fetch(cpu);
-    decode(cpu, opcode, &dest, &src, &instruction);
-    execute(cpu, &instruction, dest, src);
-    simulate_cycles(cpu);
-
-    cpu->current_state = cpu->next_state;
-
-    return instruction.opcode;
+    if (cpu->running) {
+        int16_t dest, src;
+        Instruction instruction;
+        uint8_t opcode = fetch(cpu);
+        decode(cpu, opcode, &dest, &src, &instruction);
+        execute(cpu, &instruction, dest, src);
+        simulate_cycles(cpu);
+        cpu->current_state = cpu->next_state;
+        return instruction.opcode;
+    } else {
+        return OPCODE_NOP;
+    }
+    
 }
 
 /************************************************************/
