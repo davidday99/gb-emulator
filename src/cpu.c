@@ -559,6 +559,23 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case CPL:
             break;
         case DAA:
+            if ((cpu->current_state.F & FLAG_N_MASK) == 0) {
+                if (cpu->current_state.F & FLAG_C_MASK) {
+                    write_register(cpu, instruction->destination, dest + 0x60);
+                    set_flags(cpu, FLAG_C_MASK, 0, 0, 0, 1);
+                }
+                if ((cpu->current_state.F & FLAG_H_MASK) || (dest & 0x0F) > 0x09) {
+                    write_register(cpu, instruction->destination, dest + 0x06);
+                }
+            } else {
+                if (cpu->current_state.F & FLAG_C_MASK) {
+                    write_register(cpu, instruction->destination, dest - 0x60);
+                }
+                if (cpu->current_state.F & FLAG_H_MASK) {
+                    write_register(cpu, instruction->destination, dest - 0x06);
+                }
+            }
+            set_flags(cpu, FLAG_Z_MASK | FLAG_H_MASK, get_register_value(cpu, instruction->destination), 0, 0, 0);
             break;
         case DI:
             disable_interrupts(cpu);
