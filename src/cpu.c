@@ -819,6 +819,7 @@ void execute(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
             handle_alu_operation(cpu, instruction, dest, src);
             break;
         case SHIFTER:
+            handle_shift_operation(cpu, instruction, dest, src);
             break;
         case BITWISE:
             break;
