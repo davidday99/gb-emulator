@@ -557,6 +557,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case CCF:
             break;
         case CPL:
+            write_register(cpu, instruction->destination, ~dest);
             break;
         case DAA:
             if ((cpu->current_state.F & FLAG_N_MASK) == 0) {
