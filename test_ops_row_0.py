@@ -48,7 +48,7 @@ opcodes = [
     RRCA
 ]
 
-with open('test_ops_row_0_thru_2.gb', 'wb') as f:
+with open('games/test/test_ops_row_0.gb', 'wb') as f:
     for i in range(0x100):
         f.write(b'\x00')
     f.write(bytearray(opcodes))

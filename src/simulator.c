@@ -69,11 +69,8 @@ int main() {
     CPU cpu;
 
     init_cpu(&cpu);
-
-    uint16_t x = 1;
-    x++;
-
-    FILE *f = fopen("games/test/test_ops_row_0_thru_2.gb", "rb");
+    
+    FILE *f = fopen("games/test/test_ops_row_1.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");
