@@ -698,15 +698,15 @@ void stop_cpu(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void init_cpu(CPU *cpu) {
-    cpu->current_state.AF = 0;
-    cpu->current_state.BC = 0;
-    cpu->current_state.DE = 0;
-    cpu->current_state.HL = 0;
-    cpu->current_state.PC = 0;
-    cpu->current_state.SP = 0;
-    cpu->current_state.CYCLE_COUNT = 0;
+    cpu->next_state.AF = 0;
+    cpu->next_state.BC = 0;
+    cpu->next_state.DE = 0;
+    cpu->next_state.HL = 0;
+    cpu->next_state.PC = 0;
+    cpu->next_state.SP = 0;
+    cpu->next_state.CYCLE_COUNT = 0;
 
-    cpu->next_state = cpu->current_state;
+    cpu->current_state = cpu->next_state;
     cpu->CB_mode = 0;
     cpu->running = 1;
 }
