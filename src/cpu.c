@@ -328,8 +328,9 @@ void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
 void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     switch (instruction->operation) {
         case LD:
-            if (instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
-                src = read_memory(cpu, src);
+            if (instruction->source_type == IMMEDIATE_MEM_INDIRECT ||
+                instruction->source_type == REGISTER_INDIRECT) {
+                    src = read_memory(cpu, src);
             }
             exec_ld(cpu, instruction, dest, src);
             break;
@@ -707,6 +708,7 @@ void init_cpu(CPU *cpu) {
 
     cpu->next_state = cpu->current_state;
     cpu->CB_mode = 0;
+    cpu->running = 1;
 }
 
 /************************************************************/
