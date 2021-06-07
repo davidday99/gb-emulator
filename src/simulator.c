@@ -69,8 +69,12 @@ int main() {
     CPU cpu;
 
     init_cpu(&cpu);
+
+    cpu.current_state.A = 0xFF;
+    cpu.next_state.A = 0xFF;
+
     
-    FILE *f = fopen("games/test/test_ops_row_1.gb", "rb");
+    FILE *f = fopen("games/test/test_ops_row_2.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");

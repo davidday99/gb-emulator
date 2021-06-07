@@ -58,6 +58,6 @@ def dump_file(filename):
 
 
 if __name__ == '__main__':
-    fname = 'games\\tetris.gb'
+    fname = 'games\\test\\test_ops_row_2.gb'
 
     dump_file(fname)
