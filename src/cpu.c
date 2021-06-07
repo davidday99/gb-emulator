@@ -749,8 +749,7 @@ void load_program(FILE *fp, CPU *cpu) {
     uint8_t word;
     uint32_t i = 0;
     
-    while (!feof(fp)) {
-        fread(&word, sizeof(uint8_t), 1, fp);
+    while (fread(&word, sizeof(uint8_t), 1, fp) != 0) {
         cpu->RAM[i++] = word;
     }
 
