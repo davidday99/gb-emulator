@@ -359,7 +359,12 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest
 }
 
 void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+    if (instruction->source_type == REGISTER_INDIRECT ||
+        instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
+            src = read_memory(cpu, src);
+    }
     switch (instruction->operation) {
+        uint16_t temp1, temp2, temp3;
         case ADD:
             write_register(cpu, instruction->destination, dest + src);
             if (instruction->destination <= L) {
@@ -369,7 +374,11 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             }
             break;
         case ADC:
-
+            temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
+            write_register(cpu, instruction->destination, dest + src + temp1);
+            temp2 = detect_half_carry(dest, src) | detect_half_carry(dest + src, temp1);
+            temp3 = detect_carry(dest, src, 0) | detect_carry(dest + src, temp1, 0);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src + temp1, 0, temp2, temp3);
             break;
         case SUB:
             break;
