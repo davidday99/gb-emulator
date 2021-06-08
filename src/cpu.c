@@ -264,7 +264,7 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
 /*                                                          */
 /************************************************************/
 
-int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode, uint8_t is_dest) {
+int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
     int16_t op;
     switch (addr_mode) {
         case REGISTER:
@@ -804,8 +804,8 @@ void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *
     }
 
 
-    *dest = get_operand(cpu, instruction->destination, instruction->destination_type, 1);
-    *src = get_operand(cpu, instruction->source, instruction->source_type, 0);
+    *dest = get_operand(cpu, instruction->destination, instruction->destination_type);
+    *src = get_operand(cpu, instruction->source, instruction->source_type);
 
 #ifdef DEBUG
     if (instruction->source_type == IMMEDIATE_MEM || 
