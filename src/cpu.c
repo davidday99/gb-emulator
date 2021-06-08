@@ -300,6 +300,7 @@ int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mo
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
                 op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
+                op +=  (uint16_t) 0xFF00;
             } else if (operand == A16) {
                 op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
                         (read_memory(cpu, cpu->current_state.PC + 2) << 8);
@@ -329,10 +330,6 @@ void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
 void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     switch (instruction->operation) {
         case LD:
-            if (instruction->source_type == IMMEDIATE_MEM_INDIRECT ||
-                instruction->source_type == REGISTER_INDIRECT) {
-                    src = read_memory(cpu, src);
-            }
             exec_ld(cpu, instruction, dest, src);
             break;
         case LDD:
@@ -344,13 +341,7 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest
             cpu->next_state.HL++;
             break;
         case LDH:
-            if (instruction->destination_type == IMMEDIATE_MEM_INDIRECT) {
-                dest += 0xFF00;
-                exec_ld(cpu, instruction, dest, src);
-            } else {
-                src = read_memory(cpu, 0xFF00 + src);
-                exec_ld(cpu, instruction, dest, src);
-            }
+            exec_ld(cpu, instruction, dest, src);
             break;
         default:
             break;
@@ -359,10 +350,6 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest
 }
 
 void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
-    if (instruction->source_type == REGISTER_INDIRECT ||
-        instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
-            src = read_memory(cpu, src);
-    }
     switch (instruction->operation) {
         uint16_t temp1, temp2, temp3;
         case ADD:
@@ -828,6 +815,12 @@ void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *
     }
     printf("\n");
 #endif
+
+    /* decode indirect source operands here, indirect destination operands in execute stage */
+    if (instruction->source_type == REGISTER_INDIRECT ||
+        instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
+            *src = read_memory(cpu, *src);
+    }
 }
 
 void execute(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
