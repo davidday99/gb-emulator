@@ -17,6 +17,7 @@ void enable_cb_mode(CPU *cpu);
 void disable_cb_mode(CPU *cpu);
 void start_cpu(CPU *cpu);
 void stop_cpu(CPU *cpu);
+void halt_cpu(CPU *cpu);
 
 /************************************************************/
 /*                                                          */
@@ -588,6 +589,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case CB_PREFIX:
             break;
         case HALT:
+            halt_cpu(cpu);
             break;
         case NOP:
             break;
@@ -688,6 +690,19 @@ void start_cpu(CPU *cpu) {
 /************************************************************/
 void stop_cpu(CPU *cpu) {
     cpu->running = 0;
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : halt_cpu                                     */
+/*                                                          */
+/* Purpose   : Halt CPU operation. Exact effect depends     */
+/*             on the state of IME flag but hasn't yet      */
+/*             been implemented                             */
+/*                                                          */
+/************************************************************/
+void halt_cpu(CPU *cpu) {
+    stop_cpu(cpu);
 }
 
 /************************************************************/
