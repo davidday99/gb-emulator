@@ -368,8 +368,16 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src + temp1, 0, temp2, temp3);
             break;
         case SUB:
+            write_register(cpu, instruction->destination, dest - src);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest - src, 1, detect_half_carry(dest, -src), detect_carry(dest, -src, 0));
             break;
         case SBC:
+            temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
+            write_register(cpu, instruction->destination, dest - src - temp1);
+            temp2 = detect_half_carry(dest, -src) | detect_half_carry(dest - src, -temp1);
+            temp3 = detect_carry(dest, -src, 0) | detect_carry(dest - src, -temp1, 0);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest - src - temp1, 0, temp2, temp3);
+            break;
             break;
         case INC:
             write_register(cpu, instruction->destination, dest + 1);
@@ -384,6 +392,8 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             }
             break;
         case AND:
+            write_register(cpu, instruction->destination, dest & src);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest & src, 0, 1, 0);
             break;
         case CP:
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, dest - src, 1, detect_half_carry(dest, -src), detect_carry(dest, src, 1));
@@ -392,7 +402,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             break;
         case XOR:
             write_register(cpu, instruction->destination, dest ^ src);
-            set_flags(cpu, FLAG_Z_MASK, dest ^ src, 0 , 0, 0);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, dest ^ src, 0 , 0, 0);
             break;
         default:
             break;
