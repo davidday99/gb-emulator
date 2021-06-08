@@ -74,7 +74,7 @@ int main() {
     cpu.next_state.A = 0xFF;
 
     
-    FILE *f = fopen("games/test/test_ops_row_2.gb", "rb");
+    FILE *f = fopen("games/tetris.gb", "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");
