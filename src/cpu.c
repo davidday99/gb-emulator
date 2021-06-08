@@ -399,6 +399,8 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, dest - src, 1, detect_half_carry(dest, -src), detect_carry(dest, src, 1));
             break;
         case OR:
+            write_register(cpu, instruction->destination, dest | src);
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, dest | src, 0 , 0, 0);
             break;
         case XOR:
             write_register(cpu, instruction->destination, dest ^ src);
