@@ -89,7 +89,7 @@
 #define OPCODE_LD_B_E 0x43
 #define OPCODE_LD_B_H 0x44
 #define OPCODE_LD_B_L 0x45
-#define OPCODE_LD_B_HL 0x46
+#define OPCODE_LD_B_REF_HL 0x46
 #define OPCODE_LD_B_A 0x47
 #define OPCODE_LD_C_B 0x48
 #define OPCODE_LD_C_C 0x49
@@ -97,7 +97,7 @@
 #define OPCODE_LD_C_E 0x4B
 #define OPCODE_LD_C_H 0x4C
 #define OPCODE_LD_C_L 0x4D
-#define OPCODE_LD_C_HL 0x4E
+#define OPCODE_LD_C_REF_HL 0x4E
 #define OPCODE_LD_C_A 0x4F
 
 #define OPCODE_LD_D_B 0x50
@@ -134,12 +134,12 @@
 #define OPCODE_LD_L_REF_HL 0x6E
 #define OPCODE_LD_L_A 0x6F
 
-#define OPCODE_LD_HL_B 0x70
-#define OPCODE_LD_HL_C 0x71
-#define OPCODE_LD_HL_D 0x72
-#define OPCODE_LD_HL_E 0x73
-#define OPCODE_LD_HL_H 0x74
-#define OPCODE_LD_HL_L 0x75
+#define OPCODE_LD_REF_HL_B 0x70
+#define OPCODE_LD_REF_HL_C 0x71
+#define OPCODE_LD_REF_HL_D 0x72
+#define OPCODE_LD_REF_HL_E 0x73
+#define OPCODE_LD_REF_HL_H 0x74
+#define OPCODE_LD_REF_HL_L 0x75
 #define OPCODE_HALT 0x76
 #define OPCODE_LD_REF_HL_A 0x77
 #define OPCODE_LD_A_B 0x78
