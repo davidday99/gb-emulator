@@ -528,9 +528,9 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
             break;
         case RST:
             cpu->next_state.SP -= 1;
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->next_state.SP);
+            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->next_state.SP);
             cpu->next_state.SP -= 1;
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->next_state.SP);
+            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF), cpu->next_state.SP);
             cpu->next_state.PC = dest;
             break;
         default:
