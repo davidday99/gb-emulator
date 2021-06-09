@@ -25,29 +25,8 @@ void halt_cpu(CPU *cpu);
 /*                                                          */
 /************************************************************/
 
-int16_t sign_adjust(uint16_t value, enum operand op) {
-    int16_t adjusted;
-    switch (op) {
-        case A8:
-            adjusted = (uint8_t) value;
-            break;
-        case D8:
-            adjusted = (int8_t) value;
-            break;
-        case A16:
-            adjusted = value;
-            break;
-        case D16:
-            adjusted = (int16_t) value;
-            break;
-        default:
-            break;
-    }
-    return adjusted;
-}
-
-int16_t get_register_value(CPU *cpu, enum operand reg) {
-    int16_t value;
+uint16_t get_register_value(CPU *cpu, enum operand reg) {
+    uint16_t value;
     switch (reg) {
         case A:
             value = cpu->current_state.A;
@@ -95,12 +74,10 @@ int16_t get_register_value(CPU *cpu, enum operand reg) {
     return value;
 }
 
-void write_register(CPU *cpu, enum operand reg, int16_t value) {
+void write_register(CPU *cpu, enum operand reg, uint16_t value) {
     if (reg <= L) {
         value = Low8bits(value);
-    } else {
-        value = Low16bits(value);
-    }
+    } 
 
     switch (reg) {
         case A:
@@ -264,8 +241,8 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
 /*                                                          */
 /************************************************************/
 
-int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
-    int16_t op;
+uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mode) {
+    uint16_t op;
     switch (addr_mode) {
         case REGISTER:
             op = get_register_value(cpu, operand);
@@ -285,25 +262,25 @@ int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mo
 
         case IMMEDIATE_MEM:
             if (operand == A8) {
-                op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
+                op = read_memory(cpu, cpu->current_state.PC + 1);
             } else if (operand == D8) {
-                op = (int8_t) read_memory(cpu, cpu->current_state.PC + 1);
+                op = (int8_t) read_memory(cpu, cpu->current_state.PC + 1);  // cast to sign-extend
             } else if (operand == A16) {
-                op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
+                op = read_memory(cpu, cpu->current_state.PC + 1) | 
                         (read_memory(cpu, cpu->current_state.PC + 2) << 8);
             } else if (operand == D16) {
-                op = (int16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
-                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, cpu->current_state.PC + 1) | 
+                    (read_memory(cpu, cpu->current_state.PC + 2) << 8);
             }
             break;
 
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
-                op = (uint8_t) read_memory(cpu, cpu->current_state.PC + 1);
-                op +=  (uint16_t) 0xFF00;
+                op = read_memory(cpu, cpu->current_state.PC + 1);
+                op += 0xFF00;
             } else if (operand == A16) {
-                op = (uint16_t) read_memory(cpu, cpu->current_state.PC + 1) | 
-                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, cpu->current_state.PC + 1) | 
+                    (read_memory(cpu, cpu->current_state.PC + 2) << 8);
             } 
 
             break;
@@ -318,7 +295,7 @@ int16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_mo
     return op;
 }
 
-void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+void exec_ld(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     if (instruction->destination_type == REGISTER) {
         write_register(cpu, instruction->destination, src);
     } else if (instruction->destination_type == REGISTER_INDIRECT || 
@@ -327,7 +304,7 @@ void exec_ld(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
     }
 }
 
-void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case LD:
             exec_ld(cpu, instruction, dest, src);
@@ -349,7 +326,7 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, int16_t dest
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
-void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         uint16_t temp1, temp2, temp3;
         case ADD:
@@ -362,9 +339,9 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             break;
         case ADC:
             temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
-            write_register(cpu, instruction->destination, dest + src + temp1);
             temp2 = detect_half_carry(dest, src) | detect_half_carry(dest + src, temp1);
             temp3 = detect_carry(dest, src, 0) | detect_carry(dest + src, temp1, 0);
+            write_register(cpu, instruction->destination, dest + src + temp1);
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest + src + temp1, 0, temp2, temp3);
             break;
         case SUB:
@@ -373,9 +350,9 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, int16_t dest, int1
             break;
         case SBC:
             temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
-            write_register(cpu, instruction->destination, dest - src - temp1);
             temp2 = detect_half_carry(dest, -src) | detect_half_carry(dest - src, -temp1);
             temp3 = detect_carry(dest, -src, 0) | detect_carry(dest - src, -temp1, 0);
+            write_register(cpu, instruction->destination, dest - src - temp1);
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest - src - temp1, 0, temp2, temp3);
             break;
             break;
@@ -519,7 +496,7 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
     }
 }
 
-void handle_jump_operation(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     uint16_t temp;
     switch (instruction->operation) {
         case CALL:
@@ -798,7 +775,7 @@ uint8_t fetch(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 
-void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *instruction) {
+void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction *instruction) {
     if (cpu->CB_mode == 1) {
         *instruction = CB_INSTRUCTIONS[opcode];
     } else {
@@ -835,7 +812,7 @@ void decode(CPU *cpu, uint8_t opcode, int16_t *dest, int16_t *src, Instruction *
     }
 }
 
-void execute(CPU *cpu, Instruction *instruction, int16_t dest, int16_t src) {
+void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     if (check_condition(cpu, instruction->condition) == 0) {
         cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
         return;
@@ -882,7 +859,7 @@ void simulate_cycles(CPU *cpu) {
 /************************************************************/
 uint8_t step(CPU *cpu) {
     if (cpu->running) {
-        int16_t dest, src;
+        uint16_t dest, src;
         Instruction instruction;
         uint8_t opcode = fetch(cpu);
         decode(cpu, opcode, &dest, &src, &instruction);
