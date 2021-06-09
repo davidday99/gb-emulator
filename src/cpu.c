@@ -305,6 +305,7 @@ void exec_ld(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
 }
 
 void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+    uint16_t temp;
     switch (instruction->operation) {
         case LD:
             exec_ld(cpu, instruction, dest, src);
@@ -320,6 +321,16 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t des
         case LDH:
             exec_ld(cpu, instruction, dest, src);
             break;
+        case PUSH:
+            write_memory(cpu, (src & 0xFF00) >> 8, cpu->current_state.SP - 1);
+            write_memory(cpu, src & 0xFF, cpu->current_state.SP - 2);
+            cpu->next_state.SP = cpu->current_state.SP - 2;
+            break;
+        case POP:
+            temp = read_memory(cpu, cpu->current_state.SP) |
+                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
+            write_register(cpu, instruction->destination, temp);
+            cpu->next_state.SP = cpu->current_state.SP + 2;
         default:
             break;
     }
@@ -530,7 +541,7 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
             cpu->next_state.SP -= 1;
             write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->next_state.SP);
             cpu->next_state.SP -= 1;
-            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF), cpu->next_state.SP);
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes) & 0xFF, cpu->next_state.SP);
             cpu->next_state.PC = dest;
             break;
         default:
