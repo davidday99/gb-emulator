@@ -511,10 +511,9 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
     uint16_t temp;
     switch (instruction->operation) {
         case CALL:
-            cpu->next_state.SP -= 1;
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->next_state.SP);
-            cpu->next_state.SP -= 1;
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->next_state.SP);
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->current_state.SP - 1);
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->current_state.SP - 2);
+            cpu->next_state.SP = cpu->current_state.SP - 2;
             cpu->next_state.PC = dest;
             break;
         case JP:
@@ -527,21 +526,20 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case RET:
             temp = read_memory(cpu, cpu->current_state.SP) |
                     (read_memory(cpu, cpu->current_state.SP + 1) << 8);
-            cpu->next_state.SP += 2;
+            cpu->next_state.SP = cpu->current_state.SP + 2;
             cpu->next_state.PC = temp;
             break;
         case RETI:
             temp = read_memory(cpu, cpu->current_state.SP) |
                     (read_memory(cpu, cpu->current_state.SP + 1) << 8);
-            cpu->next_state.SP += 2;
+            cpu->next_state.SP = cpu->current_state.SP + 2;
             cpu->next_state.PC = temp;
             enable_interrupts(cpu);
             break;
         case RST:
-            cpu->next_state.SP -= 1;
-            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->next_state.SP);
-            cpu->next_state.SP -= 1;
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes) & 0xFF, cpu->next_state.SP);
+            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->current_state.SP - 1);
+            write_memory(cpu, (cpu->current_state.PC + instruction->bytes) & 0xFF, cpu->current_state.SP - 2);
+            cpu->next_state.SP = cpu->current_state.SP - 2;
             cpu->next_state.PC = dest;
             break;
         default:
