@@ -247,7 +247,7 @@
 #define OPCODE_RETI 0xD9
 #define OPCODE_JP_C_A16 0xDA
 #define OPCODE_CALL_C_A16 0xDC
-#define OPCODE_SUBC_A_D8 0xDE
+#define OPCODE_SBC_A_D8 0xDE
 #define OPCODE_RST_18H 0xDF
 
 #define OPCODE_LDH_REF_A8_A 0xE0
