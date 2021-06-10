@@ -321,6 +321,8 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t des
         case LDH:
             exec_ld(cpu, instruction, dest, src);
             break;
+        case LDHL:
+            exec_ld(cpu, instruction, dest, src + cpu->current_state.SP);
         case PUSH:
             write_memory(cpu, (src & 0xFF00) >> 8, cpu->current_state.SP - 1);
             write_memory(cpu, src & 0xFF, cpu->current_state.SP - 2);
@@ -520,7 +522,6 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
             cpu->next_state.PC = dest;
             break;
         case JR:
-            dest = (int8_t) dest;
             cpu->next_state.PC = cpu->current_state.PC + instruction->bytes + dest;
             break;
         case RET:
