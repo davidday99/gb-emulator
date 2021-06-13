@@ -406,10 +406,10 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
 }
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
+    dest = Low8bits(dest);
     uint16_t temp = 0;
     switch (instruction->operation) {
         case RL:
-            dest = Low8bits(dest);
             temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
             dest <<= 1;
@@ -418,7 +418,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
             break;
         case RLA:
-            dest = Low8bits(dest);
             temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
             dest <<= 1;
@@ -426,7 +425,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             write_register(cpu, instruction->destination, dest);
             break;
         case RLC:
-            dest = Low8bits(dest);
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
             temp = dest & 0x80;
             dest <<= 1;
@@ -435,7 +433,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
             break;
         case RLCA:
-            dest = Low8bits(dest);
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
             temp = dest & 0x80;
             dest <<= 1;
@@ -443,7 +440,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             write_register(cpu, instruction->destination, dest);
             break;
         case RR:
-            dest = Low8bits(dest);
             temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
             dest >>= 1;
@@ -452,7 +448,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
             break;
         case RRA:
-            dest = Low8bits(dest);
             temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
             dest >>= 1;
@@ -460,7 +455,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             write_register(cpu, instruction->destination, dest);
             break;
         case RRC:
-            dest = Low8bits(dest);
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
             temp = dest & 1;
             dest >>= 1;
@@ -469,7 +463,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
             break;
         case RRCA:
-            dest = Low8bits(dest);
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
             temp = dest & 1;
             dest >>= 1;
@@ -477,6 +470,7 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             write_register(cpu, instruction->destination, dest); 
             break;
         case SLA:
+
             break;
         case SRA:
             break;
