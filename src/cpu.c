@@ -490,8 +490,8 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
 
     switch (instruction->operation) {
         case BIT:
-            temp1 = src & bit_mask;
-            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp1, 0, 1, 0);
+            src &= bit_mask;
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, src, 0, 1, 0);
             break;
         case SET:
             src |= bit_mask;
