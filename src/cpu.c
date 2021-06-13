@@ -477,8 +477,20 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
                 write_register(cpu, instruction->destination, src);
             break;
         case SRA:
+            temp = src & 0x80;
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            src >>= 1;
+            src |= temp;
+            instruction->destination_type == REGISTER_INDIRECT ?
+                write_memory(cpu, src, dest) :
+                write_register(cpu, instruction->destination, src);
             break;
         case SRL:
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            src >>= 1;
+            instruction->destination_type == REGISTER_INDIRECT ?
+                write_memory(cpu, src, dest) :
+                write_register(cpu, instruction->destination, src);
             break;
         default:
             break;
