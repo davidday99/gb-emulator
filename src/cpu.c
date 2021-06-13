@@ -564,15 +564,17 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case CCF:
+            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, (cpu->current_state.F & FLAG_C_MASK) >> 4);
             break;
         case CPL:
             write_register(cpu, instruction->destination, ~dest);
+            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK, 0, 1, 1, 0);
             break;
         case DAA:
             if ((cpu->current_state.F & FLAG_N_MASK) == 0) {
                 if (cpu->current_state.F & FLAG_C_MASK) {
                     write_register(cpu, instruction->destination, dest + 0x60);
-                    set_flags(cpu, FLAG_C_MASK, 0, 0, 0, 1);
+                    set_flags(cpu, FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, 1);
                 }
                 if ((cpu->current_state.F & FLAG_H_MASK) || (dest & 0x0F) > 0x09) {
                     write_register(cpu, instruction->destination, dest + 0x06);
@@ -601,6 +603,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         case NOP:
             break;
         case SCF:
+            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, 1);
             break;
         case STOP:
             stop_cpu(cpu);
