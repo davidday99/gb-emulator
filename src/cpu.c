@@ -508,9 +508,11 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
         default:
             break;
     }
-    instruction->destination_type == REGISTER ? 
-        write_register(cpu, instruction->destination, src) :
-        write_memory(cpu, src, dest);
+    if (instruction->operation != BIT) {
+        instruction->destination_type == REGISTER ? 
+            write_register(cpu, instruction->destination, src) :
+            write_memory(cpu, src, dest);
+    }
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
