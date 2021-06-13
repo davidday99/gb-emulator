@@ -504,6 +504,7 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
             temp2 = src & 0xF0;
             temp1 >>= 4;
             src = (uint8_t) temp1 | temp2;
+            set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         default:
             break;
