@@ -510,6 +510,7 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
         default:
             break;
     }
+    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
 void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
