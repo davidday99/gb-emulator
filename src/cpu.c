@@ -485,55 +485,32 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
 }
 
 void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
-    uint8_t bit_mask = 1 << instruction->destination;
+    uint8_t bit_mask = 1 << dest;
     uint16_t temp1, temp2;
 
     switch (instruction->operation) {
         case BIT:
-            //set Z flag if bit == 0
-            temp1 = 1 << dest;
-            temp2 = src & temp1;
-            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp2, 0, 1, 0);
+            temp1 = src & bit_mask;
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp1, 0, 1, 0);
             break;
         case SET:
-            temp1 = instruction->destination_type == REGISTER ? 
-                    get_register_value(cpu, instruction->destination) :
-                    read_memory(cpu, dest);
-            
-            temp1 |= bit_mask;
-
-            instruction->destination_type == REGISTER ? 
-                write_register(cpu, instruction->destination, temp1) :
-                write_memory(cpu, temp1, dest);
+            src |= bit_mask;
             break;
-        case RES:
-            temp1 = instruction->destination_type == REGISTER ? 
-                    get_register_value(cpu, instruction->destination) :
-                    read_memory(cpu, dest);
-            
-            temp1 &= ~bit_mask;
-
-            instruction->destination_type == REGISTER ? 
-                write_register(cpu, instruction->destination, temp1) :
-                write_memory(cpu, temp1, dest);
+        case RES:            
+            src &= ~bit_mask;
             break;
         case SWAP:
-            temp1 = instruction->destination_type == REGISTER ? 
-                    get_register_value(cpu, instruction->destination) :
-                    read_memory(cpu, dest);
-
-            temp2 = temp1 << 4;
-            temp1 &= 0xF0;
+            temp1 = src << 4;
+            temp2 = src & 0xF0;
             temp1 >>= 4;
-            temp1 = (uint8_t) temp1 | temp2;
-            
-            instruction->destination_type == REGISTER ? 
-                write_register(cpu, instruction->destination, temp1) :
-                write_memory(cpu, temp1, dest);
+            src = (uint8_t) temp1 | temp2;
             break;
         default:
             break;
     }
+    instruction->destination_type == REGISTER ? 
+        write_register(cpu, instruction->destination, src) :
+        write_memory(cpu, src, dest);
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
