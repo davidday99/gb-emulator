@@ -467,6 +467,9 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
     switch (instruction->operation) {
         case BIT:
             //set Z flag if bit == 0
+            temp1 = 1 << dest;
+            temp2 = src & temp1;
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp2, 0, 1, 0);
             break;
         case SET:
             temp1 = instruction->destination_type == REGISTER ? 
