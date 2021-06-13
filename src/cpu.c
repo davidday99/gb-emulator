@@ -414,7 +414,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             src <<= 1;
             src |= (temp >> 4);
-            write_register(cpu, instruction->destination, src);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RLA:
@@ -422,14 +421,12 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             src <<= 1;
             src |= (temp >> 4);
-            write_register(cpu, instruction->destination, src);
             break;
         case RLC:
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             temp = src & 0x80;
             src <<= 1;
             src |= (temp >> 7);
-            write_register(cpu, instruction->destination, src);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RLCA:
@@ -437,14 +434,12 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             temp = src & 0x80;
             src <<= 1;
             src |= (temp >> 7);
-            write_register(cpu, instruction->destination, src);
             break;
         case RR:
             temp = cpu->current_state.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= (temp << 3);
-            write_register(cpu, instruction->destination, src);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RRA:
@@ -452,14 +447,12 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= (temp << 3);
-            write_register(cpu, instruction->destination, src);
             break;
         case RRC:
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             temp = src & 1;
             src >>= 1;
             src |= (temp << 7);
-            write_register(cpu, instruction->destination, src);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RRCA:
@@ -467,34 +460,27 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             temp = src & 1;
             src >>= 1;
             src |= (temp << 7);
-            write_register(cpu, instruction->destination, src); 
             break;
         case SLA:
             temp = src & 0x80;
             src <<= 1;
-            instruction->destination_type == REGISTER_INDIRECT ?
-                write_memory(cpu, src, dest) :
-                write_register(cpu, instruction->destination, src);
             break;
         case SRA:
             temp = src & 0x80;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= temp;
-            instruction->destination_type == REGISTER_INDIRECT ?
-                write_memory(cpu, src, dest) :
-                write_register(cpu, instruction->destination, src);
             break;
         case SRL:
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
-            instruction->destination_type == REGISTER_INDIRECT ?
-                write_memory(cpu, src, dest) :
-                write_register(cpu, instruction->destination, src);
             break;
         default:
             break;
     }
+    instruction->destination_type == REGISTER ?
+        write_register(cpu, instruction->destination, src) :
+        write_memory(cpu, src, dest);
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
