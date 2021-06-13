@@ -406,68 +406,68 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
 }
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
-    dest = Low8bits(dest);
+    src = Low8bits(src);
     uint16_t temp = 0;
     switch (instruction->operation) {
         case RL:
             temp = cpu->current_state.F & FLAG_C_MASK;
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
-            dest <<= 1;
-            dest |= (temp >> 4);
-            write_register(cpu, instruction->destination, dest);
-            set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
+            src <<= 1;
+            src |= (temp >> 4);
+            write_register(cpu, instruction->destination, src);
+            set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RLA:
             temp = cpu->current_state.F & FLAG_C_MASK;
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
-            dest <<= 1;
-            dest |= (temp >> 4);
-            write_register(cpu, instruction->destination, dest);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
+            src <<= 1;
+            src |= (temp >> 4);
+            write_register(cpu, instruction->destination, src);
             break;
         case RLC:
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
-            temp = dest & 0x80;
-            dest <<= 1;
-            dest |= (temp >> 7);
-            write_register(cpu, instruction->destination, dest);
-            set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
+            temp = src & 0x80;
+            src <<= 1;
+            src |= (temp >> 7);
+            write_register(cpu, instruction->destination, src);
+            set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RLCA:
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 0x80);
-            temp = dest & 0x80;
-            dest <<= 1;
-            dest |= (temp >> 7);
-            write_register(cpu, instruction->destination, dest);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
+            temp = src & 0x80;
+            src <<= 1;
+            src |= (temp >> 7);
+            write_register(cpu, instruction->destination, src);
             break;
         case RR:
             temp = cpu->current_state.F & FLAG_C_MASK;
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
-            dest >>= 1;
-            dest |= (temp << 3);
-            write_register(cpu, instruction->destination, dest);
-            set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            src >>= 1;
+            src |= (temp << 3);
+            write_register(cpu, instruction->destination, src);
+            set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RRA:
             temp = cpu->current_state.F & FLAG_C_MASK;
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
-            dest >>= 1;
-            dest |= (temp << 3);
-            write_register(cpu, instruction->destination, dest);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            src >>= 1;
+            src |= (temp << 3);
+            write_register(cpu, instruction->destination, src);
             break;
         case RRC:
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
-            temp = dest & 1;
-            dest >>= 1;
-            dest |= (temp << 7);
-            write_register(cpu, instruction->destination, dest);
-            set_flags(cpu, FLAG_Z_MASK, dest, 0, 0, 0);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            temp = src & 1;
+            src >>= 1;
+            src |= (temp << 7);
+            write_register(cpu, instruction->destination, src);
+            set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RRCA:
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, dest & 1);
-            temp = dest & 1;
-            dest >>= 1;
-            dest |= (temp << 7);
-            write_register(cpu, instruction->destination, dest); 
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            temp = src & 1;
+            src >>= 1;
+            src |= (temp << 7);
+            write_register(cpu, instruction->destination, src); 
             break;
         case SLA:
             temp = src & 0x80;
