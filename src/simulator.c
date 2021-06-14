@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <string.h>
 #include "../include/cpu.h"
 
 #define MAX_INPUT_LEN 20
@@ -65,7 +66,7 @@ void simulate(CPU *cpu) {
     } while (cpu->current_state.PC != 0);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     CPU cpu;
 
     init_cpu(&cpu);
@@ -73,8 +74,12 @@ int main() {
     cpu.current_state.A = 0xFF;
     cpu.next_state.A = 0xFF;
 
+    if (argc < 2) {
+        printf("Usage: ./simulator <GB ROM path>\n");
+        exit(-1);
+    }
     
-    FILE *f = fopen("games/test/test_ops_row_0.gb", "rb");
+    FILE *f = fopen(argv[1], "rb");
 
     if (f == NULL) {
         printf("Error: could not open file.\n");
