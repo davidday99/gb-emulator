@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <ctype.h>
-#include <string.h>
 #include "../include/cpu.h"
 
 #define MAX_INPUT_LEN 20
