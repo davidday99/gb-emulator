@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include "../include/cpu.h"
 
-#define NUM_TESTS 3
+#define NUM_TESTS 4
 int test_row_0(CPU *cpu);
 int test_row_1(CPU *cpu);
 int test_row_2(CPU *cpu);
+int test_row_3(CPU *cpu);
+
 
 int (*tests[NUM_TESTS])(CPU *cpu) = {
     test_row_1,
     test_row_0,
-    test_row_2
+    test_row_2,
+    test_row_3
 };
 
 int main() {
