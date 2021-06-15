@@ -370,19 +370,31 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             break;
             break;
         case INC:
-            instruction->destination_type == REGISTER ?
-                write_register(cpu, instruction->destination, dest + 1) :
+            if (instruction->destination_type == REGISTER) {
+                write_register(cpu, instruction->destination, dest + 1);
+                temp1 = dest + 1;
+                temp2 = detect_half_carry(dest, 1);
+            } else {
                 write_memory(cpu, src + 1, dest);
+                temp1 = src + 1;
+                temp2 = detect_half_carry(src, 1);
+            }
             if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
-                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, detect_half_carry(dest, 1), 0);
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp1, 0, temp2, 0);
             }
             break;
         case DEC:
-            instruction->destination_type == REGISTER ?
-                write_register(cpu, instruction->destination, dest - 1) :
+            if (instruction->destination_type == REGISTER) {
+                write_register(cpu, instruction->destination, dest - 1);
+                temp1 = dest - 1;
+                temp2 = detect_half_carry(dest, -1);
+            } else {
                 write_memory(cpu, src - 1, dest);
+                temp1 = src - 1;
+                temp2 = detect_half_carry(src, -1);
+            }
             if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
-                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest - 1, 1, detect_half_carry(dest, -1), 0);
+                set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, temp1, 1, temp2, 0);
             }
             break;
         case AND:
