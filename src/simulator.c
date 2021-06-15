@@ -38,6 +38,9 @@ void simulate(CPU *cpu) {
             sscanf(start, "%X %X", &mem_start, &mem_stop);
             while (mem_start <= mem_stop) {
                 printf("0x%04X: 0x%02X\n", mem_start, cpu->RAM[mem_start]);
+                if (mem_start == 0xFFFF) {
+                    break;
+                }
                 mem_start++;
             }
 
