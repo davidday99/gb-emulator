@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
-#include "../../include/cpu.h"
-#include "../../include/isa-sm83.h"
+#include "../include/cpu.h"
+#include "../include/isa-sm83.h"
 
-int row_0() {
+int test_row_0() {
+    printf("Testing opcodes row 0.\n");
+
     CPU cpu;
     init_cpu(&cpu);
 
