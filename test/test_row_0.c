@@ -92,7 +92,7 @@ int test_row_0(CPU *cpu) {
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
-    step(cpu); // DEC B
+    step(cpu); // DEC C
     assert(cpu->current_state.C == prev_C);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
