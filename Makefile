@@ -20,14 +20,13 @@ $(ODIR)/simulator: $(OBJS)
 	$(CC) -o $@ $^ -g
 
 test: $(ODIR)/$(TEST)/test_runner
+	./$(ODIR)/$(TEST)/test_runner
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
 	$(CC) -o $@ $^ $(CFLAGS) -c -g
 
 $(ODIR)/$(TEST)/test_runner: $(TEST_OBJS) $(ODIR)/cpu.o $(ODIR)/isa-sm83.o
 	$(CC) -o $@ $^ -g
-	./$(ODIR)/$(TEST)/test_runner
-
 
 clean:
 	rm -rf $(ODIR)/*
@@ -35,4 +34,4 @@ clean:
 $(shell mkdir -p $(ODIR))
 $(shell mkdir -p $(ODIR)/$(TEST))
 
-.PHONY: all clean
+.PHONY: all clean run test
