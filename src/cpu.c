@@ -138,7 +138,7 @@ void set_z_flag(CPU *cpu, uint8_t z) {
 }
 
 void set_n_flag(CPU *cpu, uint8_t n) {
-    if (n == 1) {
+    if (n != 0) {
         cpu->next_state.F |= FLAG_N_MASK;
     } else {
         cpu->next_state.F &= ~FLAG_N_MASK;
@@ -146,7 +146,7 @@ void set_n_flag(CPU *cpu, uint8_t n) {
 }
 
 void set_h_flag(CPU *cpu, uint8_t h) {
-    if (h == 1) {
+    if (h != 0) {
         cpu->next_state.F |= FLAG_H_MASK;
     } else {
         cpu->next_state.F &= ~FLAG_H_MASK;
@@ -154,7 +154,7 @@ void set_h_flag(CPU *cpu, uint8_t h) {
 }
 
 void set_c_flag(CPU *cpu, uint8_t c) {
-    if (c == 1) {
+    if (c != 0) {
         cpu->next_state.F |= FLAG_C_MASK;
     } else {
         cpu->next_state.F &= ~FLAG_C_MASK;
