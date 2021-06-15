@@ -26,7 +26,7 @@ $(ODIR)/$(TEST)/%.o: $(TEST)/%.c
 
 $(ODIR)/$(TEST)/test_runner: $(TEST_OBJS) $(ODIR)/cpu.o $(ODIR)/isa-sm83.o
 	$(CC) -o $@ $^ -g
-	./test_runner
+	./$(ODIR)/$(TEST)/test_runner
 
 
 clean:
