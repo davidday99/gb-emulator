@@ -580,7 +580,7 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case CCF:
-            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, (cpu->current_state.F & FLAG_C_MASK) >> 4);
+            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, !(cpu->current_state.F & FLAG_C_MASK));
             break;
         case CPL:
             write_register(cpu, instruction->destination, ~dest);
