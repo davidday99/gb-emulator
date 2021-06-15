@@ -30,7 +30,7 @@ opcodes = [
     LD_SP_d16,
     d16_low,
     d16_high,
-    LDD_HL_A,
+    LDD_REF_HL_A,
     INC_SP,
     INC_REF_HL,
     DEC_REF_HL,
