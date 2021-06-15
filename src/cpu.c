@@ -370,13 +370,17 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             break;
             break;
         case INC:
-            write_register(cpu, instruction->destination, dest + 1);
+            instruction->destination_type == REGISTER ?
+                write_register(cpu, instruction->destination, dest + 1) :
+                write_memory(cpu, src + 1, dest);
             if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
                 set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest + 1, 0, detect_half_carry(dest, 1), 0);
             }
             break;
         case DEC:
-            write_register(cpu, instruction->destination, dest - 1);
+            instruction->destination_type == REGISTER ?
+                write_register(cpu, instruction->destination, dest - 1) :
+                write_memory(cpu, src - 1, dest);
             if (instruction->destination <= L || instruction->destination_type == REGISTER_INDIRECT) {
                 set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK, dest - 1, 1, detect_half_carry(dest, -1), 0);
             }
@@ -820,10 +824,14 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 #ifdef DEBUG
     if (instruction->source_type == IMMEDIATE_MEM || 
         instruction->source_type == IMMEDIATE_MEM_INDIRECT) {
-            printf(instruction->mnemonic, *src);
+            instruction->source == D8 ?
+                printf(instruction->mnemonic, (uint8_t) *src) :
+                printf(instruction->mnemonic, *src);
     } else if (instruction->destination_type == IMMEDIATE_MEM ||
         instruction->destination_type == IMMEDIATE_MEM_INDIRECT) {
-            printf(instruction->mnemonic, *dest);
+            instruction->destination == D8 ?
+                printf(instruction->mnemonic, (uint8_t) *dest) :
+                printf(instruction->mnemonic, *dest);
     } else {
         printf(instruction->mnemonic);
     }
