@@ -1,19 +1,26 @@
 #include <stdio.h>
 #include "../include/cpu.h"
 
-#define NUM_TESTS 5
+/**
+ *  Opcodes are organized into rows based on the table from
+ *  https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
+ */
+
+#define NUM_TESTS 6
 int test_row_0(CPU *cpu);
 int test_row_1(CPU *cpu);
 int test_row_2(CPU *cpu);
 int test_row_3(CPU *cpu);
 int test_row_4(CPU *cpu);
+int test_row_5(CPU *cpu);
 
 int (*tests[NUM_TESTS])(CPU *cpu) = {
     test_row_0,
     test_row_1,
     test_row_2,
     test_row_3,
-    test_row_4
+    test_row_4,
+    test_row_5
 };
 
 int main() {
