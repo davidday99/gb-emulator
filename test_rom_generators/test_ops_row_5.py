@@ -2,7 +2,7 @@
 # init B to 2
 # init C to 3
 # init D to 0
-# init E to 1
+# init E to 5
 # init H to 6
 # init L to 7
 
