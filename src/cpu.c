@@ -696,6 +696,47 @@ void disable_interrupts(CPU *cpu) {
     cpu->enable_interrupts == 0;
 }
 
+void check_v_blank(CPU *cpu) {
+    uint32_t period = CPU_FREQ / V_BLANK_FREQ;
+    if ((cpu->current_state.CYCLE_COUNT % period) == 0 &&
+        (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) == V_BLANK_MASK) {
+        cpu->RAM[IF_REGISTER] |= V_BLANK_MASK;
+    }
+}
+
+void check_lcdc_status(CPU *cpu) {
+
+}
+
+void check_interrupts(CPU *cpu) {
+    check_v_blank(cpu);
+    check_lcdc_status(cpu);
+}
+
+service_v_blank(CPU *cpu) {
+    // push PC and jump to V-Blank address
+    cpu->next_state.PC = V_BLANK_ADDRESS;
+}
+
+service_lcdc_status(CPU *cpu) {
+    // push PC and jump to V-Blank address
+    cpu->next_state.PC = LCDC_STATUS_MASK;
+}
+
+
+void service_interrupt(CPU *cpu) {
+    uint8_t interrupts = cpu->RAM[IF_REGISTER];
+    uint8_t interrupt_enabled = cpu->RAM[IE_REGISTER];
+
+    if ((interrupts & V_BLANK_MASK) &&
+        (interrupt_enabled & V_BLANK_MASK)) {
+            service_v_blank(cpu);
+    } else if ((interrupts & LCDC_STATUS_MASK) &&
+        (interrupt_enabled & LCDC_STATUS_MASK)) {
+            service_lcdc_status(cpu);
+        }
+}
+
 /************************************************************/
 /*                                                          */
 /* Procedure : start CPU                                    */
@@ -807,6 +848,7 @@ void load_program(FILE *fp, CPU *cpu) {
 /************************************************************/
 uint8_t fetch(CPU *cpu) {
     return read_memory(cpu, cpu->current_state.PC);
+    check_interrupts(cpu);
 }
 
 /************************************************************/
@@ -903,7 +945,7 @@ void simulate_cycles(CPU *cpu) {
 /* Purpose   : execute a single instruction, return opcode  */
 /*                                                          */
 /************************************************************/
-uint8_t step(CPU *cpu) {
+void step(CPU *cpu) {
     uint8_t running = !cpu->stopped & !cpu->low_power_mode;
     if (running) {
         uint16_t dest, src;
@@ -913,9 +955,9 @@ uint8_t step(CPU *cpu) {
         execute(cpu, &instruction, dest, src);
         simulate_cycles(cpu);
         cpu->current_state = cpu->next_state;
-        return instruction.opcode;
-    } else {
-        return OPCODE_NOP;
+    }
+    if (cpu->enable_interrupts == 1) {
+        service_interrupts(cpu);
     }
     
 }
