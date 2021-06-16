@@ -681,7 +681,7 @@ void toggle_cb_mode(CPU *cpu) {
 /************************************************************/
 
 void enable_interrupts(CPU *cpu) {
-    cpu->enable_interrupts == 1;
+    cpu->interrupts_enabled == 1;
 }
 
 /************************************************************/
@@ -693,29 +693,63 @@ void enable_interrupts(CPU *cpu) {
 /************************************************************/
 
 void disable_interrupts(CPU *cpu) {
-    cpu->enable_interrupts == 0;
+    cpu->interrupts_enabled == 0;
+}
+
+void generate_v_blank(CPU *cpu) {
+    cpu->RAM[IF_REGISTER] |= V_BLANK_MASK;
 }
 
 void check_v_blank(CPU *cpu) {
     uint32_t period = CPU_FREQ / V_BLANK_FREQ;
-    if ((cpu->current_state.CYCLE_COUNT % period) == 0 &&
-        (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) == V_BLANK_MASK) {
-        cpu->RAM[IF_REGISTER] |= V_BLANK_MASK;
+    if ((cpu->current_state.CYCLE_COUNT % period) == 0) {
+        generate_v_blank(cpu);
     }
 }
 
-void check_lcdc_status(CPU *cpu) {
+void generate_lcdc_status(CPU *cpu) {
+    cpu->RAM[IF_REGISTER] |= LCDC_STATUS_MASK;
+}
 
+void check_lcdc_status(CPU *cpu) {
+    // logic for detecting interrupt
+    generate_lcdc_status(cpu);
+}
+
+void generate_tim_oflow(CPU *cpu) {
+    cpu->RAM[IF_REGISTER] |= TIM_OFLOW_MASK;
+}
+
+void check_tim_oflow(CPU *cpu) {
+    // logic for detecting interrupt
+    generate_tim_oflow(cpu);
+}
+
+void generate_serial_complete(CPU *cpu) {
+    cpu->RAM[IF_REGISTER] |= SERIAL_COMPLETE_MASK;
+}
+
+void check_serial_complete(CPU *cpu) {
+    // logic for detecting interrupt
+    generate_serial_complete(cpu);
 }
 
 void check_interrupts(CPU *cpu) {
     check_v_blank(cpu);
     check_lcdc_status(cpu);
+    check_tim_oflow(cpu);
+    check_serial_complete(cpu);
 }
 
 service_v_blank(CPU *cpu) {
-    // push PC and jump to V-Blank address
-    cpu->next_state.PC = V_BLANK_ADDRESS;
+    if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->next_state.PC = V_BLANK_ADDRESS;
+    }
 }
 
 service_lcdc_status(CPU *cpu) {
@@ -724,7 +758,7 @@ service_lcdc_status(CPU *cpu) {
 }
 
 
-void service_interrupt(CPU *cpu) {
+void service_interrupts(CPU *cpu) {
     uint8_t interrupts = cpu->RAM[IF_REGISTER];
     uint8_t interrupt_enabled = cpu->RAM[IE_REGISTER];
 
@@ -954,12 +988,11 @@ void step(CPU *cpu) {
         decode(cpu, opcode, &dest, &src, &instruction);
         execute(cpu, &instruction, dest, src);
         simulate_cycles(cpu);
-        cpu->current_state = cpu->next_state;
     }
-    if (cpu->enable_interrupts == 1) {
+    if (cpu->interrupts_enabled == 1) {
         service_interrupts(cpu);
     }
-    
+    cpu->current_state = cpu->next_state;
 }
 
 /************************************************************/

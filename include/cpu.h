@@ -55,7 +55,7 @@ typedef struct CPU {
     Core next_state;
     uint8_t RAM[RAM_SIZE];
     uint8_t CB_mode;
-    uint8_t enable_interrupts;
+    uint8_t interrupts_enabled;
     uint8_t stopped;
     uint8_t low_power_mode;
 } CPU;
