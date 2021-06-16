@@ -113,8 +113,10 @@ int test_row_7(CPU *cpu) {
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
-    uint16_t prev_PC = cpu->current_state.PC;
     step(cpu); // HALT
+    assert(cpu->low_power_mode == 1);
+    uint16_t prev_PC = cpu->current_state.PC;
+    step(cpu);
     assert(cpu->current_state.PC == prev_PC);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
 
