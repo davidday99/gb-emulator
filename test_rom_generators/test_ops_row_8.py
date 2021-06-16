@@ -1,30 +1,45 @@
-# initialize A to 1
-# init B to 2
-# init C to 3
-# init D to 4
-# init E to 5
-# init H to 0
-# init L to 0
+# initialize A to 0
+# init B to 1
+# init C to 2
+# init D to 3
+# init E to 4
+# init H to 5
+# init L to 6
 
-LD_REF_HL_B = 0x70
-LD_REF_HL_C = 0x71
-LD_REF_HL_D = 0x72
-LD_REF_HL_E = 0x73
-LD_REF_HL_H = 0x74
-LD_REF_HL_L = 0x75
-LD_REF_HL_A = 0x77
-LD_A_B = 0x78
-LD_A_C = 0x79
-LD_A_D = 0x7A
-LD_A_E = 0x7B
-LD_A_H = 0x7C
-LD_A_L = 0x7D
-LD_A_REF_HL = 0x7E
-LD_A_A = 0x7F
-HALT = 0x76
+ADD_A_B = 0x80
+ADD_A_C = 0x81
+ADD_A_D = 0x82
+ADD_A_E = 0x83
+ADD_A_H = 0x84
+ADD_A_L = 0x85
+ADD_A_REF_HL = 0x86
+ADD_A_A = 0x87
+ADC_A_B = 0x88
+ADC_A_C = 0x89
+ADC_A_D = 0x8A
+ADC_A_E = 0x8B
+ADC_A_H = 0x8C
+ADC_A_L = 0x8D
+ADC_A_REF_HL = 0x8E
+ADC_A_A = 0x8F
 
 opcodes = [
-
+    ADD_A_B,
+    ADD_A_C,
+    ADD_A_D,
+    ADD_A_E,
+    ADD_A_H,
+    ADD_A_L,
+    ADD_A_REF_HL,
+    ADD_A_A,
+    ADC_A_B,
+    ADC_A_C,
+    ADC_A_D,
+    ADC_A_E,
+    ADC_A_H,
+    ADC_A_L,
+    ADC_A_REF_HL,
+    ADC_A_A,
 ]
 
 with open('games/test/test_ops_row_8.gb', 'wb') as f:
