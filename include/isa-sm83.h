@@ -555,6 +555,14 @@
 #define CB 1
 #define NO_CB 0
 
+/* Interrupts */
+
+#define INTERRUPT_VBLANK 0x40
+#define INTERRUPT_LCDC_STATUS 0x48
+#define INTERRUPT_TIM_OFLOW 0x50
+#define INTERRUPT_SERIAL_COMPLETE 0x58
+#define INTERRUPT_HI_TO_LO 0x60
+
 enum operand {
     A,
     B,
