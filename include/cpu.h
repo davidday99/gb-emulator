@@ -6,7 +6,10 @@
 #define RAM_SIZE 0x10000
 #define MEM_CYCLE_DELAY 4
 #define JUMP_DELAY 4
-#define ALU_DELAY_16_BIT 4 
+#define ALU_DELAY_16_BIT 4
+
+#define CPU_FREQ 4194304
+#define V_BLANK_FREQ 60
 
 typedef struct Core {
     union {
@@ -58,7 +61,7 @@ typedef struct CPU {
 } CPU;
 
 void init_cpu(CPU *cpu);
-uint8_t step(CPU *cpu);
+void step(CPU *cpu);
 void step_n(uint32_t n, CPU *cpu);
 void run(CPU *cpu);
 void dump_registers(CPU *cpu);
