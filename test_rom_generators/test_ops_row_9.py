@@ -6,40 +6,40 @@
 # init H to 5
 # init L to 6
 
-SUB_A_B = 0x90
-SUB_A_C = 0x91
-SUB_A_D = 0x92
-SUB_A_E = 0x93
-SUB_A_H = 0x94
-SUB_A_L = 0x95
-SUB_A_REF_HL = 0x96
-SUB_A_A = 0x97
-SBC_A_B = 0x98
-SBC_A_C = 0x99
-SBC_A_D = 0x9A
-SBC_A_E = 0x9B
-SBC_A_H = 0x9C
-SBC_A_L = 0x9D
-SBC_A_REF_HL = 0x9E
-SBC_A_A = 0x9F
+SUB_B = 0x90
+SUB_C = 0x91
+SUB_D = 0x92
+SUB_E = 0x93
+SUB_H = 0x94
+SUB_L = 0x95
+SUB_REF_HL = 0x96
+SUB_A = 0x97
+SBC_B = 0x98
+SBC_C = 0x99
+SBC_D = 0x9A
+SBC_E = 0x9B
+SBC_H = 0x9C
+SBC_L = 0x9D
+SBC_REF_HL = 0x9E
+SBC_A = 0x9F
 
 opcodes = [
-    SUB_A_B,
-    SUB_A_C,
-    SUB_A_D,
-    SUB_A_E,
-    SUB_A_H,
-    SUB_A_L,
-    SUB_A_REF_HL,
-    SUB_A_A,
-    SBC_A_B,
-    SBC_A_C,
-    SBC_A_D,
-    SBC_A_E,
-    SBC_A_H,
-    SBC_A_L,
-    SBC_A_REF_HL,
-    SBC_A_A,
+    SUB_B,
+    SUB_C,
+    SUB_D,
+    SUB_E,
+    SUB_H,
+    SUB_L,
+    SUB_REF_HL,
+    SUB_A,
+    SBC_B,
+    SBC_C,
+    SBC_D,
+    SBC_E,
+    SBC_H,
+    SBC_L,
+    SBC_REF_HL,
+    SBC_A,
 ]
 
 with open('games/test/test_ops_row_9.gb', 'wb') as f:
