@@ -25,7 +25,6 @@ int test_row_6(CPU *cpu) {
     cpu->next_state.H = 0;
     cpu->current_state.L = 7;
     cpu->next_state.L = 7;
-    cpu->RAM[cpu->current_state.HL] = 0xFF;
 
     FILE *f = fopen("games/test/test_ops_row_6.gb", "rb");
 
@@ -60,9 +59,11 @@ int test_row_6(CPU *cpu) {
     assert(cpu->current_state.H == cpu->current_state.L);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->RAM[cpu->current_state.HL] = 0xFF;
     
     step(cpu); // LD H,(HL)
-    assert(cpu->current_state.H == cpu->RAM[cpu->current_state.HL]);
+    assert(cpu->current_state.H == 0xFF);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
@@ -105,9 +106,11 @@ int test_row_6(CPU *cpu) {
     assert(cpu->next_state.L == 6);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->RAM[cpu->current_state.HL] = 0xFF;
     
     step(cpu); // LD L,(HL)
-    assert(cpu->next_state.L == cpu->RAM[cpu->current_state.HL]);
+    assert(cpu->next_state.L == 0xFF);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
