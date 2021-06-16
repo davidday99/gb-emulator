@@ -569,7 +569,14 @@
 #define SERIAL_COMPLETE_ADDRESS 0x58
 #define HI_TO_LO_ADDRESS 0x60
 
-/* Important Registers */
+/* Special Registers */
+#define P1_REGISTER 0xFF00
+#define SB_REGISTER 0xFF01
+#define SC_REGISTER 0xFF02
+#define DIV_REGISTER 0xFF04
+#define TIMA_REGISTER 0xFF05
+#define TMA_REGISTER 0xFF06
+#define TAC_REGISTER 0xFF07
 #define IF_REGISTER 0xFF0F
 #define STAT_REGISTER 0xFF41
 #define SCY_REGISTER 0xFF42
@@ -583,8 +590,6 @@
 #define WY_REGISTER 0xFF4A
 #define WX_REGISTER 0xFF4B
 #define IE_REGISTER 0xFFFF
-
-
 
 enum operand {
     A,
