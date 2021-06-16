@@ -53,7 +53,8 @@ typedef struct CPU {
     uint8_t RAM[RAM_SIZE];
     uint8_t CB_mode;
     uint8_t enable_interrupts;
-    uint8_t running;
+    uint8_t stopped;
+    uint8_t low_power_mode;
 } CPU;
 
 void init_cpu(CPU *cpu);

@@ -704,7 +704,7 @@ void disable_interrupts(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void start_cpu(CPU *cpu) {
-    cpu->running = 1;
+    cpu->stopped = 0;
 }
 
 /************************************************************/
@@ -715,7 +715,7 @@ void start_cpu(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void stop_cpu(CPU *cpu) {
-    cpu->running = 0;
+    cpu->stopped = 1;
 }
 
 /************************************************************/
@@ -728,7 +728,7 @@ void stop_cpu(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void halt_cpu(CPU *cpu) {
-    stop_cpu(cpu);
+    cpu->low_power_mode = 1;
 }
 
 /************************************************************/
@@ -749,7 +749,8 @@ void init_cpu(CPU *cpu) {
 
     cpu->current_state = cpu->next_state;
     cpu->CB_mode = 0;
-    cpu->running = 1;
+    cpu->stopped = 0;
+    cpu->low_power_mode = 0;
 }
 
 /************************************************************/
@@ -903,7 +904,8 @@ void simulate_cycles(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 uint8_t step(CPU *cpu) {
-    if (cpu->running) {
+    uint8_t running = !cpu->stopped & !cpu->low_power_mode;
+    if (running) {
         uint16_t dest, src;
         Instruction instruction;
         uint8_t opcode = fetch(cpu);
