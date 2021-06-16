@@ -557,7 +557,7 @@
 
 /* Interrupts */
 
-#define V_BLANK_MASK 0
+#define V_BLANK_MASK 1
 #define LCDC_STATUS_MASK 0x02
 #define TIM_OFLOW 0x04
 #define SERIAL_COMPLETE_MASK 0x0x08
