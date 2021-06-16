@@ -32,42 +32,42 @@ int test_row_5(CPU *cpu) {
     load_program(f, cpu);
 
     step(cpu); // LD D,B
-    assert(cpu->next_state.D == cpu->current_state.B);
+    assert(cpu->current_state.D == cpu->current_state.B);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     step(cpu); // LD D,C
-    assert(cpu->next_state.D == cpu->current_state.C);
+    assert(cpu->current_state.D == cpu->current_state.C);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,D
-    assert(cpu->next_state.D == 3);
+    assert(cpu->current_state.D == 3);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,E
-    assert(cpu->next_state.D == cpu->current_state.E);
+    assert(cpu->current_state.D == cpu->current_state.E);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,H
-    assert(cpu->next_state.D == cpu->current_state.H);
+    assert(cpu->current_state.D == cpu->current_state.H);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,L
-    assert(cpu->next_state.D == cpu->current_state.L);
+    assert(cpu->current_state.D == cpu->current_state.L);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,(HL)
-    assert(cpu->next_state.D == cpu->RAM[cpu->current_state.HL]);
+    assert(cpu->current_state.D == cpu->RAM[cpu->current_state.HL]);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
     step(cpu); // LD D,A
-    assert(cpu->next_state.D == cpu->current_state.A);
+    assert(cpu->current_state.D == cpu->current_state.A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     
