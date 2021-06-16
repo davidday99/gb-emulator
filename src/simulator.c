@@ -73,9 +73,6 @@ int main(int argc, char *argv[]) {
 
     init_cpu(&cpu);
 
-    cpu.current_state.A = 0xFF;
-    cpu.next_state.A = 0xFF;
-
     if (argc < 2) {
         printf("Usage: ./simulator <GB ROM path>\n");
         exit(-1);

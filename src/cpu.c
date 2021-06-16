@@ -741,7 +741,7 @@ void check_interrupts(CPU *cpu) {
     check_serial_complete(cpu);
 }
 
-service_v_blank(CPU *cpu) {
+void service_v_blank(CPU *cpu) {
     if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
         cpu->interrupts_enabled = 0;
         cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
@@ -752,7 +752,7 @@ service_v_blank(CPU *cpu) {
     }
 }
 
-service_lcdc_status(CPU *cpu) {
+void service_lcdc_status(CPU *cpu) {
     // push PC and jump to V-Blank address
     cpu->next_state.PC = LCDC_STATUS_MASK;
 }
