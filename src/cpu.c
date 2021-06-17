@@ -645,7 +645,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 /************************************************************/
 
 void enable_cb_mode(CPU *cpu) {
-    cpu->CB_mode == 1;
+    cpu->CB_mode = 1;
 }
 
 /************************************************************/
@@ -658,7 +658,7 @@ void enable_cb_mode(CPU *cpu) {
 /************************************************************/
 
 void disable_cb_mode(CPU *cpu) {
-    cpu->CB_mode == 0;
+    cpu->CB_mode = 0;
 }
 
 /************************************************************/
@@ -681,7 +681,7 @@ void toggle_cb_mode(CPU *cpu) {
 /************************************************************/
 
 void enable_interrupts(CPU *cpu) {
-    cpu->interrupts_enabled == 1;
+    cpu->interrupts_enabled = 1;
 }
 
 /************************************************************/
@@ -693,7 +693,7 @@ void enable_interrupts(CPU *cpu) {
 /************************************************************/
 
 void disable_interrupts(CPU *cpu) {
-    cpu->interrupts_enabled == 0;
+    cpu->interrupts_enabled = 0;
 }
 
 void generate_v_blank(CPU *cpu) {
