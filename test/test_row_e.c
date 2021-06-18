@@ -48,7 +48,7 @@ int test_row_e(CPU *cpu) {
     cpu->next_state.HL = 0xFEED;
     step(cpu); // PUSH HL
     assert(cpu->current_state.SP == (uint16_t) (prev_SP - 2));
-    uint16_t *ptr = &cpu->RAM[cpu->current_state.SP];
+    uint16_t *ptr = (uint16_t*) &cpu->RAM[cpu->current_state.SP];
     assert(*ptr == 0xFEED);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
