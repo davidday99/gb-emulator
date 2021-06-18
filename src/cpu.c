@@ -323,6 +323,7 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t des
             break;
         case LDHL:
             exec_ld(cpu, instruction, dest, src + cpu->current_state.SP);
+            break;
         case PUSH:
             write_memory(cpu, (src & 0xFF00) >> 8, cpu->current_state.SP - 1);
             write_memory(cpu, src & 0xFF, cpu->current_state.SP - 2);
