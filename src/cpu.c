@@ -479,14 +479,14 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             src |= (temp << 7);
             break;
         case SLA:
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             temp = src & 0x80;
             src <<= 1;
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case SRA:
-            temp = src & 0x80;
-            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, 0);
+            temp = src & 0x80; // preserve sign
+            set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= temp;
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
