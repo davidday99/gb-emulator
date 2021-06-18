@@ -424,7 +424,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     src = Low8bits(src);
-    uint16_t temp = 0;
+    uint16_t temp, temp1;
     switch (instruction->operation) {
         case RL:
             temp = cpu->current_state.F & FLAG_C_MASK;
@@ -496,6 +496,12 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             src >>= 1;
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
+        case SWAP:
+            temp = (src & 0x0F) << 4;
+            temp1 = (src & 0xF0) >> 4;
+            src = (uint8_t) temp | temp1;
+            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, src, 0, 0, 0);
+            break;
         default:
             break;
     }
@@ -507,7 +513,6 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
 
 void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     uint8_t bit_mask = 1 << dest;
-    uint16_t temp1, temp2;
 
     switch (instruction->operation) {
         case BIT:
@@ -519,13 +524,6 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
             break;
         case RES:            
             src &= ~bit_mask;
-            break;
-        case SWAP:
-            temp1 = src << 4;
-            temp2 = src & 0xF0;
-            temp1 >>= 4;
-            src = (uint8_t) temp1 | temp2;
-            set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, src, 0, 0, 0);
             break;
         default:
             break;
