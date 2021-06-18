@@ -192,6 +192,96 @@ int test_cb_row_2(CPU *cpu) {
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
+    /* Test sign-extension for arithmetic shift */
+
+    cpu->current_state.A = 0x81;
+    cpu->next_state.A = 0x81;
+    cpu->current_state.B = 0x81;
+    cpu->next_state.B = 0x81;
+    cpu->current_state.C = 0x81;
+    cpu->next_state.C = 0x81;
+    cpu->current_state.D = 0x81;
+    cpu->next_state.D = 0x81;
+    cpu->current_state.E = 0x81;
+    cpu->next_state.E = 0x81;
+    cpu->current_state.H = 0x81;
+    cpu->next_state.H = 0x81;
+    cpu->current_state.L = 0x81;
+    cpu->next_state.L = 0x81;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA B
+    assert(cpu->current_state.B == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA C
+    assert(cpu->current_state.C == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA D
+    assert(cpu->current_state.D == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA E
+    assert(cpu->current_state.E == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA H
+    assert(cpu->current_state.H == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA L
+    assert(cpu->current_state.L == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->RAM[cpu->current_state.HL] = 0x81;
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA (HL)
+    assert(cpu->RAM[cpu->current_state.HL] == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    cpu->current_state.F = 0;
+    cpu->next_state.F = 0;
+    step(cpu); // Enter CB Mode
+    step(cpu); // SRA A
+    assert(cpu->current_state.A == 0xC0);
+    assert(cpu->current_state.F == FLAG_C_MASK);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
     
     return 0;
 }

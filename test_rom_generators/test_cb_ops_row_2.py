@@ -50,6 +50,22 @@ opcodes = [
     SRA_REF_HL,
     PREFIX_CB,
     SRA_A,
+    PREFIX_CB,
+    SRA_B,
+    PREFIX_CB,
+    SRA_C,
+    PREFIX_CB,
+    SRA_D,
+    PREFIX_CB,
+    SRA_E,
+    PREFIX_CB,
+    SRA_H,
+    PREFIX_CB,
+    SRA_L,
+    PREFIX_CB,
+    SRA_REF_HL,
+    PREFIX_CB,
+    SRA_A,
 ]
 
 with open('games/test/test_cb_ops_row_2.gb', 'wb') as f:
