@@ -1,11 +1,3 @@
-# initialize A to 0
-# init B to 1
-# init C to 2
-# init D to 3
-# init E to 4
-# init H to 5
-# init L to 6
-
 POP_BC = 0xC1
 PUSH_BC = 0xC5
 ADD_A_d8 = 0xC6

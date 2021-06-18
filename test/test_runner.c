@@ -6,7 +6,7 @@
  *  https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
  */
 
-#define NUM_TESTS 13
+#define NUM_TESTS 14
 int test_row_0(CPU *cpu);
 int test_row_1(CPU *cpu);
 int test_row_2(CPU *cpu);
@@ -20,6 +20,7 @@ int test_row_9(CPU *cpu);
 int test_row_a(CPU *cpu);
 int test_row_b(CPU *cpu);
 int test_row_c(CPU *cpu);
+int test_row_d(CPU *cpu);
 
 int (*tests[NUM_TESTS])(CPU *cpu) = {
     test_row_0,
@@ -34,7 +35,8 @@ int (*tests[NUM_TESTS])(CPU *cpu) = {
     test_row_9,
     test_row_a,
     test_row_b,
-    test_row_c
+    test_row_c,
+    test_row_d
 };
 
 int main() {
