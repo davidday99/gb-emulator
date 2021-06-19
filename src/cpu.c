@@ -511,8 +511,39 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
+uint8_t get_bit(uint8_t opcode) {
+    uint8_t high_nibble = (opcode & 0xF0) >> 4;
+    uint8_t low_nibble = opcode & 0xF;
+    uint8_t bit;
+    switch (high_nibble) {
+        case 4:
+        case 8:
+        case 12:
+            bit = low_nibble < 8 ? 0 : 1;
+            break;
+        case 5:
+        case 9:
+        case 13:
+            bit = low_nibble < 8 ? 2 : 3;
+            break;
+        case 6:
+        case 10:
+        case 14:
+            bit = low_nibble < 8 ? 4 : 5;
+            break;
+        case 7:
+        case 11:
+        case 15:
+            bit = low_nibble < 8 ? 6 : 7;
+            break;
+        default:
+            break;
+    }
+    return bit;
+}
+
 void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
-    uint8_t bit_mask = 1 << dest;
+    uint8_t bit_mask = 1 << get_bit(instruction->opcode);
 
     switch (instruction->operation) {
         case BIT:
@@ -950,6 +981,7 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
             handle_shift_operation(cpu, instruction, dest, src);
             break;
         case BITWISE:
+            handle_bitwise_operation(cpu, instruction, dest, src);
             break;
         case JUMP:
             handle_jump_operation(cpu, instruction, dest, src);
