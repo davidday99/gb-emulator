@@ -746,10 +746,6 @@ void check_lcdc_status(CPU *cpu) {
     generate_lcdc_status(cpu);
 }
 
-void generate_tim_oflow(CPU *cpu) {
-    cpu->RAM[IF_REGISTER] |= TIM_OFLOW_MASK;
-}
-
 void check_tim_oflow(CPU *cpu) {
     // logic for detecting interrupt
     generate_tim_oflow(cpu);
@@ -783,10 +779,26 @@ void service_v_blank(CPU *cpu) {
 }
 
 void service_lcdc_status(CPU *cpu) {
-    // push PC and jump to V-Blank address
-    cpu->next_state.PC = LCDC_STATUS_MASK;
+    if (cpu->RAM[IE_REGISTER] & LCDC_STATUS_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~LCDC_STATUS_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->next_state.PC = LCDC_STATUS_ADDRESS;
+    }
 }
 
+void service_tim_oflow(CPU *cpu) {
+    if (cpu->RAM[IE_REGISTER] & TIM_OFLOW_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~TIM_OFLOW_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->next_state.PC = TIM_OFLOW_ADDRESS;
+    }
+}
 
 void service_interrupts(CPU *cpu) {
     uint8_t interrupts = cpu->RAM[IF_REGISTER];
@@ -798,6 +810,9 @@ void service_interrupts(CPU *cpu) {
     } else if ((interrupts & LCDC_STATUS_MASK) &&
         (interrupt_enabled & LCDC_STATUS_MASK)) {
             service_lcdc_status(cpu);
+    } else if ((interrupts & TIM_OFLOW_MASK) &&
+        (interrupt_enabled & TIM_OFLOW_MASK)) {
+            service_tim_oflow(cpu);
         }
 }
 
@@ -913,12 +928,16 @@ void load_program(FILE *fp, CPU *cpu) {
 /*                                                          */
 /* Procedure : fetch                                        */
 /*                                                          */
-/* Purpose   : Fetch a single instruction from memory       */
+/* Purpose   : If interrupts enabled, service any pending   */
+/*             interrupts, then fetch a single              */
+/*             instruction from memory                      */
 /*                                                          */
 /************************************************************/
 uint8_t fetch(CPU *cpu) {
+    if (cpu->interrupts_enabled == 1) {
+        service_interrupts(cpu);
+    }
     return read_memory(cpu, cpu->current_state.PC);
-    check_interrupts(cpu);
 }
 
 /************************************************************/
@@ -1025,9 +1044,6 @@ void step(CPU *cpu) {
         decode(cpu, opcode, &dest, &src, &instruction);
         execute(cpu, &instruction, dest, src);
         simulate_cycles(cpu);
-    }
-    if (cpu->interrupts_enabled == 1) {
-        service_interrupts(cpu);
     }
     cpu->current_state = cpu->next_state;
 }
