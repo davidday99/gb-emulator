@@ -1,5 +1,6 @@
 # initialize A to 0xFF
 
+STOP = 0x10
 LD_DE_d16 = 0x11
 d16_low = 0xEF
 d16_high = 0xBE  # DE <- 0xBEEF
@@ -41,7 +42,8 @@ opcodes = [
     DEC_E,
     LD_E_d8,
     d8_1,
-    RRA
+    RRA,
+    STOP
 ]
 
 with open('games/test/test_ops_row_1.gb', 'wb') as f:

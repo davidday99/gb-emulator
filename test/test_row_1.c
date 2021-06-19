@@ -103,6 +103,15 @@ int test_row_1(CPU *cpu) {
     assert(cpu->current_state.A == 0xE6);
     assert(cpu->current_state.F == 0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->current_state.CYCLE_COUNT;
+
+    prev_PC = cpu->current_state.PC;
+    step(cpu); // STOP
+    assert(cpu->stopped == 1);
+    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
+    prev_PC = cpu->current_state.PC;
+    step(cpu);
+    assert(cpu->current_state.PC == prev_PC);
 
     return 0;
 }
