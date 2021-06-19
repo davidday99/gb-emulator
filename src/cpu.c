@@ -845,17 +845,23 @@ void halt_cpu(CPU *cpu) {
 /************************************************************/
 void init_cpu(CPU *cpu) {
     cpu->next_state.AF = 0;
-    cpu->next_state.BC = 0;
-    cpu->next_state.DE = 0;
-    cpu->next_state.HL = 0;
+    cpu->next_state.BC = 0x0013;
+    cpu->next_state.DE = 0x00D8;
+    cpu->next_state.HL = 0x014D;
     cpu->next_state.PC = 0;
-    cpu->next_state.SP = 0;
+    cpu->next_state.SP = 0xFFFE;
     cpu->next_state.CYCLE_COUNT = 0;
 
     cpu->current_state = cpu->next_state;
     cpu->CB_mode = 0;
     cpu->stopped = 0;
     cpu->low_power_mode = 0;
+    
+    memset(cpu->RAM, 0, sizeof(cpu->RAM));
+    cpu->RAM[LCDC_REGISTER] = 0x91;
+    cpu->RAM[BGP_REGISTER] = 0xFC;
+    cpu->RAM[OBP0_REGISTER] = 0xFF;
+    cpu->RAM[OBP1_REGISTER] = 0xFF;
 }
 
 /************************************************************/
@@ -892,7 +898,6 @@ void dump_registers(CPU *cpu) {
 /************************************************************/
 
 void load_program(FILE *fp, CPU *cpu) {
-    memset(cpu->RAM, 0, sizeof(cpu->RAM));
     uint8_t word;
     uint32_t i = 0;
     
