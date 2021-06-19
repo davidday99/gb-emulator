@@ -832,6 +832,7 @@ void stop_cpu(CPU *cpu) {
 /*             been implemented                             */
 /*                                                          */
 /************************************************************/
+// TODO: implement hardware bug found in GB CPU
 void halt_cpu(CPU *cpu) {
     cpu->low_power_mode = 1;
 }
