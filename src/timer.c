@@ -1,8 +1,9 @@
 #include <stdint.h>
+#include <string.h>
 #include "../include/cpu.h"
 #include "../include/isa-sm83.h"
 
-#define TIMER_RUNNING 4
+#define RUNNING 4
 #define CLOCK_SELECT 3
 #define DIV_FREQ 16384
 
@@ -47,8 +48,8 @@ void generate_interrupt(Timer *timer) {
     *timer->interrupt_flag_register |= TIM_OFLOW_MASK;
 }
 
-void step(Timer *timer) {
-    if ((*timer->control & TIMER_RUNNING) == 0) {
+void step_timer(Timer *timer) {
+    if ((*timer->control & RUNNING) == 0) {
         return;
     }
 

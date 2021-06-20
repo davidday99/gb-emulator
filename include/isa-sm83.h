@@ -592,6 +592,11 @@
 #define WX_REGISTER 0xFF4B
 #define IE_REGISTER 0xFFFF
 
+/* Video */
+#define VRAM_START_0 0x8000
+#define VRAM_START_1 0x9000
+#define VRAM_SIZE = 0x4000
+
 /* Timer Register */ 
 #define TAC_FREQ_0 4096
 #define TAC_FREQ_1 262144

@@ -50,7 +50,7 @@ void simulate(CPU *cpu) {
             }
             cycles = strtol(start, &end, 10);
             while (cycles > 0) {
-                step(cpu);
+                step_cpu(cpu);
                 cycles--;
             }
             break;
