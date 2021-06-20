@@ -14,6 +14,7 @@
 #define OBJ_DISP_MASK 2
 #define BG_WINDOW_DISPLAY_MASK 1
 
+#define VIDEO_FREQ 60
 
 typedef struct Video {
     uint8_t *screen;
@@ -29,7 +30,8 @@ typedef struct Video {
     uint8_t *obpo;
     uint8_t *obp1;
     uint8_t *wy;
-    uint8_t *wx;   
+    uint8_t *wx;
+    uint64_t CYCLE_COUNT;
 } Video;
 
 init_video(Video *video, CPU *cpu) {
@@ -53,6 +55,16 @@ init_video(Video *video, CPU *cpu) {
     
 }
 
-void write_line(Video *video, uint8_t row) {
+void write_screen(Video *video, uint8_t row) {
+    
+}
 
+void generate_v_blank(Video *video) {
+    *video->interrupt_flag_register |= V_BLANK_MASK;
+}
+
+void step(Video *video) {
+    if ((video->CYCLE_COUNT % VIDEO_FREQ) == 0) {
+        generate_v_blank(video);
+    }
 }

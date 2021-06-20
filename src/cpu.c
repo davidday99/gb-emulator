@@ -726,47 +726,6 @@ void disable_interrupts(CPU *cpu) {
     cpu->interrupts_enabled = 0;
 }
 
-void generate_v_blank(CPU *cpu) {
-    cpu->RAM[IF_REGISTER] |= V_BLANK_MASK;
-}
-
-void check_v_blank(CPU *cpu) {
-    uint32_t period = CPU_FREQ / V_BLANK_FREQ;
-    if ((cpu->current_state.CYCLE_COUNT % period) == 0) {
-        generate_v_blank(cpu);
-    }
-}
-
-void generate_lcdc_status(CPU *cpu) {
-    cpu->RAM[IF_REGISTER] |= LCDC_STATUS_MASK;
-}
-
-void check_lcdc_status(CPU *cpu) {
-    // logic for detecting interrupt
-    generate_lcdc_status(cpu);
-}
-
-void check_tim_oflow(CPU *cpu) {
-    // logic for detecting interrupt
-    generate_tim_oflow(cpu);
-}
-
-void generate_serial_complete(CPU *cpu) {
-    cpu->RAM[IF_REGISTER] |= SERIAL_COMPLETE_MASK;
-}
-
-void check_serial_complete(CPU *cpu) {
-    // logic for detecting interrupt
-    generate_serial_complete(cpu);
-}
-
-void check_interrupts(CPU *cpu) {
-    check_v_blank(cpu);
-    check_lcdc_status(cpu);
-    check_tim_oflow(cpu);
-    check_serial_complete(cpu);
-}
-
 void service_v_blank(CPU *cpu) {
     if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
         cpu->interrupts_enabled = 0;
