@@ -12,7 +12,12 @@ int test_row_0(CPU *cpu) {
     int prev_cycles = 0;
 
     cpu->current_state.A = 0xFF;
-    cpu->next_state.A = 0xFF;
+    cpu->current_state.BC = 0;
+    cpu->next_state.BC = 0;
+    cpu->current_state.DE = 0;
+    cpu->next_state.DE = 0;
+    cpu->current_state.HL = 0;
+    cpu->next_state.HL = 0;
 
     FILE *f = fopen("games/test/test_ops_row_0.gb", "rb");
 
