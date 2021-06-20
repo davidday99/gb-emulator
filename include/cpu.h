@@ -61,8 +61,8 @@ typedef struct CPU {
 } CPU;
 
 void init_cpu(CPU *cpu);
-void step(CPU *cpu);
-void step_n(uint32_t n, CPU *cpu);
+void step_cpu(CPU *cpu);
+void step_cpu_n(uint32_t n, CPU *cpu);
 void run(CPU *cpu);
 void dump_registers(CPU *cpu);
 void load_program(FILE *fp, CPU *cpu);

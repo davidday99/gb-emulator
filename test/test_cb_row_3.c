@@ -33,48 +33,48 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP B
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP B
     assert(cpu->current_state.B == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP C
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP C
     assert(cpu->current_state.C == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP D
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP D
     assert(cpu->current_state.D == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP E
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP E
     assert(cpu->current_state.E == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP H
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP H
     assert(cpu->current_state.H == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP L
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP L
     assert(cpu->current_state.L == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
@@ -82,16 +82,16 @@ int test_cb_row_3(CPU *cpu) {
     cpu->RAM[cpu->current_state.HL] = 0x0F;
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP (HL)
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP (HL)
     assert(cpu->RAM[cpu->current_state.HL] == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SWAP A
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SWAP A
     assert(cpu->current_state.A == 0xF0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
@@ -115,8 +115,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL B
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL B
     assert(cpu->current_state.B == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -124,8 +124,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL C
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL C
     assert(cpu->current_state.C == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -133,8 +133,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL D
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL D
     assert(cpu->current_state.D == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -142,8 +142,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL E
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL E
     assert(cpu->current_state.E == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -151,8 +151,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL H
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL H
     assert(cpu->current_state.H == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -160,8 +160,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL L
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL L
     assert(cpu->current_state.L == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -170,8 +170,8 @@ int test_cb_row_3(CPU *cpu) {
     cpu->RAM[cpu->current_state.HL] = 0x81;
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL (HL)
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL (HL)
     assert(cpu->RAM[cpu->current_state.HL] == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
@@ -179,8 +179,8 @@ int test_cb_row_3(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // Enter CB Mode
-    step(cpu); // SRL A
+    step_cpu(cpu); // Enter CB Mode
+    step_cpu(cpu); // SRL A
     assert(cpu->current_state.A == 0x40);
     assert(cpu->current_state.F == FLAG_C_MASK);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);

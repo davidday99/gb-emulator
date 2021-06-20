@@ -30,42 +30,42 @@ int test_row_b(CPU *cpu) {
 
     load_program(f, cpu);
 
-    step(cpu); // OR B
+    step_cpu(cpu); // OR B
     assert(cpu->current_state.A == cpu->current_state.B);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR C
+    step_cpu(cpu); // OR C
     assert(cpu->current_state.A == cpu->current_state.C);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR D
+    step_cpu(cpu); // OR D
     assert(cpu->current_state.A == cpu->current_state.D);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR E
+    step_cpu(cpu); // OR E
     assert(cpu->current_state.A == cpu->current_state.E);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR H
+    step_cpu(cpu); // OR H
     assert(cpu->current_state.A == cpu->current_state.H);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR L
+    step_cpu(cpu); // OR L
     assert(cpu->current_state.A == cpu->current_state.L);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
@@ -74,14 +74,14 @@ int test_row_b(CPU *cpu) {
 
     cpu->RAM[cpu->current_state.HL] = 1;
 
-    step(cpu); // OR (HL)
+    step_cpu(cpu); // OR (HL)
     assert(cpu->current_state.A == cpu->RAM[cpu->current_state.HL]);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
     cpu->current_state.A = 0;
     cpu->next_state.A = 0;
 
-    step(cpu); // OR A
+    step_cpu(cpu); // OR A
     assert(cpu->current_state.A == 0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
@@ -92,7 +92,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP B
+    step_cpu(cpu); // CP B
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -102,7 +102,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP C
+    step_cpu(cpu); // CP C
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -112,7 +112,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP D
+    step_cpu(cpu); // CP D
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -122,7 +122,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP E
+    step_cpu(cpu); // CP E
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -132,7 +132,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP H
+    step_cpu(cpu); // CP H
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -142,7 +142,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP L
+    step_cpu(cpu); // CP L
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
@@ -152,7 +152,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP (HL)
+    step_cpu(cpu); // CP (HL)
     assert(cpu->current_state.F == (FLAG_N_MASK | FLAG_C_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
@@ -162,7 +162,7 @@ int test_row_b(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    step(cpu); // CP A
+    step_cpu(cpu); // CP A
     assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_N_MASK));
     assert(cpu->current_state.A == prev_A);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);

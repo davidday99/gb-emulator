@@ -1035,7 +1035,7 @@ void simulate_cycles(CPU *cpu) {
 /* Purpose   : execute a single instruction, return opcode  */
 /*                                                          */
 /************************************************************/
-void step(CPU *cpu) {
+void step_cpu(CPU *cpu) {
     uint8_t running = !cpu->stopped & !cpu->low_power_mode;
     if (running) {
         uint16_t dest, src;
@@ -1055,9 +1055,9 @@ void step(CPU *cpu) {
 /* Purpose   : execute n instructions                       */
 /*                                                          */
 /************************************************************/
-void step_n(uint32_t n, CPU *cpu) {
+void step_cpu_n(uint32_t n, CPU *cpu) {
     while (n > 0) {
-        step(cpu);
+        step_cpu(cpu);
         n--;
     }
 }
@@ -1071,6 +1071,6 @@ void step_n(uint32_t n, CPU *cpu) {
 /************************************************************/
 void run(CPU *cpu) {
     do {
-        step(cpu);
+        step_cpu(cpu);
     } while (cpu->current_state.PC != 0);
 }

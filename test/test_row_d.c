@@ -22,7 +22,7 @@ int test_row_d(CPU *cpu) {
     cpu->RAM[0xFFFD] = 0xEF;
 
     uint16_t prev_SP = cpu->current_state.SP;
-    step(cpu); // POP DE
+    step_cpu(cpu); // POP DE
     assert(cpu->current_state.DE == 0xBEEF);
     assert(cpu->current_state.SP == prev_SP + 2);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
@@ -31,19 +31,19 @@ int test_row_d(CPU *cpu) {
     prev_SP = cpu->current_state.SP;
     cpu->current_state.DE = 0xFEED;
     cpu->next_state.DE = 0xFEED;
-    step(cpu); // PUSH DE
+    step_cpu(cpu); // PUSH DE
     assert(cpu->current_state.SP == prev_SP - 2);
     uint16_t *ptr = (uint16_t*) &cpu->RAM[cpu->current_state.SP];
     assert(*ptr == 0xFEED);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
-    step(cpu); // SUB A,1
+    step_cpu(cpu); // SUB A,1
     assert(cpu->current_state.A == 0xFF);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
     prev_cycles = cpu->current_state.CYCLE_COUNT;
 
-    step(cpu); // SBC A,0xFF
+    step_cpu(cpu); // SBC A,0xFF
     assert(cpu->current_state.A == 0);
     assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
 
