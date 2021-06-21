@@ -328,7 +328,7 @@ int test_cb_row_7(CPU *cpu) {
 
     cpu->current_state.F = 0;
     cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = ~128;
+    cpu->RAM[cpu->current_state.HL] = (uint8_t) ~128;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 7,(HL)
     assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
