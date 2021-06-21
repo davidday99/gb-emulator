@@ -17,12 +17,14 @@
 #define VIDEO_FREQ 60
 
 typedef struct Video {
-    uint8_t *screen;
+    uint8_t *vram;
+    uint8_t *bg_tile_map;
+    uint8_t *oam;
     uint8_t *interrupt_flag_register;
     uint8_t *control; 
     uint8_t *status;
     uint8_t *scy;
-    uint8_t scx;
+    uint8_t *scx;
     uint8_t *ly;
     uint8_t *lyc;
     uint8_t *dma_start;
@@ -34,7 +36,7 @@ typedef struct Video {
     uint64_t CYCLE_COUNT;
 } Video;
 
-init_video(Video *video, CPU *cpu) {
+void init_video(Video *video, CPU *cpu) {
     video->interrupt_flag_register = &cpu->RAM[IF_REGISTER];
     video->control = &cpu->RAM[LCDC_REGISTER];
     video->status = &cpu->RAM[STAT_REGISTER];
@@ -49,10 +51,15 @@ init_video(Video *video, CPU *cpu) {
     video->wy = &cpu->RAM[WY_REGISTER];
     video->wx = &cpu->RAM[WX_REGISTER];
 
-    video->screen = (*video->control & BG_WINDOW_TILE_DATA_SELECT_MASK) != 0 ?
-                    &cpu->RAM[VRAM_START_0] :
-                    &cpu->RAM[VRAM_START_1];
-    
+    video->vram = (*video->control & BG_WINDOW_TILE_DATA_SELECT_MASK) != 0 ?
+                    &cpu->RAM[TILE_DATA_SELECT_1] :
+                    &cpu->RAM[TILE_DATA_SELECT_0];
+
+    video->bg_tile_map = (*video->control & BG_TILE_MAP_DISP_SELECT_MASK) != 0?
+                            &cpu->RAM[TILE_DISP_SELECT_1] :
+                            &cpu->RAM[TILE_DISP_SELECT_0];
+
+    video->oam = &cpu->RAM[OAM_ADDRESS];
 }
 
 void write_screen(Video *video, uint8_t row) {
