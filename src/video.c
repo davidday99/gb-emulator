@@ -77,18 +77,18 @@ int16_t get_tile_number(Video *video, uint8_t row, uint8_t tile) {
     return (int16_t) tile_num;
 }
 
-uint16_t get_tile_address(Video *video, int16_t tile_num) {
-    return (uint16_t) video->vram + tile_num;
+uint8_t* get_tile_address(Video *video, int16_t tile_num) {
+    return video->vram + tile_num;
 }
 
-uint8_t get_pixel_color(Video *video, uint16_t tile_addr, uint8_t row, uint8_t pixel) {
+uint8_t get_pixel_color(Video *video, uint8_t *tile_addr, uint8_t row, uint8_t pixel) {
     uint8_t pixel_mask = 1 << (7 - pixel);
     uint8_t color;
     row %= 8;
     tile_addr += row;
 
-    color |= (video->vram[tile_addr] & pixel_mask) >> (7 - pixel); // get LSB
-    color |= (video->vram[tile_addr + 1] & pixel_mask) >> (8 - pixel); // get MSB
+    color |= (*tile_addr & pixel_mask) >> (7 - pixel); // get LSB
+    color |= (*(tile_addr + 1) & pixel_mask) >> (8 - pixel); // get MSB
 
     return color;
 }
