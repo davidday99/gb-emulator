@@ -593,8 +593,17 @@
 #define IE_REGISTER 0xFFFF
 
 /* Video */
-#define VRAM_START_0 0x8000
-#define VRAM_START_1 0x9000
+#define TILE_DATA_SELECT_0 0x9000
+#define TILE_DATA_SELECT_1 0x8000
+
+#define TILE_DISP_SELECT_0 0x9800
+#define TILE_DISP_SELECT_1 0x9C00
+
+#define OAM_ADDRESS 0xFE00
+#define OAM_SIZE 160
+
+#define NUM_TILES 1024
+
 #define VRAM_SIZE = 0x4000
 
 /* Timer Register */ 
