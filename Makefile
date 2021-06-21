@@ -21,10 +21,10 @@ test: $(ODIR)/$(TEST)/test_runner
 $(ODIR)/%.o: $(SRC)/%.c
 	$(CC) -o $@ $^ $(CFLAGS) -c -g $(debug)
 
-$(ODIR)/simulator: $(filter-out gb.o, $(OBJS))
+$(ODIR)/simulator: $(filter-out $(ODIR)/gb.o, $(OBJS))
 	$(CC) -o $@ $^ -g
 
-$(ODIR)/gb: $(filter-out simulator.o, $(OBJS))
+$(ODIR)/gb: $(filter-out $(ODIR)/simulator.o, $(OBJS))
 	$(CC) -o $@ $^ -g
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
