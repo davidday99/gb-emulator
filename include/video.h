@@ -35,9 +35,10 @@ typedef struct Video {
     uint8_t *wy;
     uint8_t *wx;
     uint64_t CYCLE_COUNT;
+    uint8_t **buffer;
 } Video;
 
 void init_video(Video *video, CPU *cpu);
-void step_video(Video *video);
+void step_video(Video *video, uint64_t cycles);
 
 #endif /* VIDEO_H */
