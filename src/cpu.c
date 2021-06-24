@@ -604,7 +604,9 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         default:
             break;
     }
-    cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
+    if (instruction->opcode != 0xE9) {
+        cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
+    }
 }
 
 void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -952,6 +954,9 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     if (check_condition(cpu, instruction->condition) == 0) {
+        if (instruction->operation == RET) {
+            cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
+        }
         cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
         return;
     }
