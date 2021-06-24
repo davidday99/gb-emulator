@@ -5,6 +5,13 @@
 
 #include "screen.h"
 
+enum Color {
+  WHITE,
+  L_GRAY,
+  D_GRAY,
+  BLACK
+};
+
 #define LEFT_MARGIN 10
 #define TOP_MARGIN 10
 #define RIGHT_MARGIN 10
@@ -22,19 +29,20 @@ static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data
   return FALSE;
 }
 
-static void draw_pixel(cairo_t *cr, int x, int y, int color) {
+static void draw_pixel(cairo_t *cr, int x, int y, enum Color color) {
   switch (color) {
-  case 0:
+  case BLACK:
     cairo_set_source_rgb(cr, 0, 0, 0); // black
     break;
-  case 1:
-    cairo_set_source_rgb(cr, 0.5, 0.5, 0.5); // grey
+  case L_GRAY:
+    cairo_set_source_rgb(cr, 0.5, 0.5, 0.5); // light gray
     break;
-  case 2:
-    cairo_set_source_rgb(cr, 1, 1, 1); // white
-    break;
-  case 3:
+  case D_GRAY:
+    cairo_set_source_rgb(cr, 0.25, 0.25, 0.25); // dark gray
+  case WHITE:
+    //cairo_set_source_rgb(cr, 1, 1, 1); // white
     return;
+    break;
   default:
     break;
   }
