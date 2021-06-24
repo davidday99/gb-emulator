@@ -27,13 +27,13 @@ int main(int argc, char *argv[]) {
 
     uint64_t prev_cycles;
 
-    show_screen(&screen);
+    //show_screen(&screen);
     while (1) {
         prev_cycles = cpu.current_state.CYCLE_COUNT;
         step_cpu(&cpu);
         step_video(&video, cpu.current_state.CYCLE_COUNT - prev_cycles);
-        if (*video.ly == 144) {
-            draw_screen(&screen);
-        }
+        // if (*video.ly == 144) {
+        //     draw_screen(&screen);
+        // }
     }
 }
