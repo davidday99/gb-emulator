@@ -76,7 +76,7 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
 
 void write_register(CPU *cpu, enum operand reg, uint16_t value) {
     if (reg <= L) {
-        value = Low8bits(value);
+        value = (uint8_t) value;
     } 
 
     switch (reg) {
@@ -571,8 +571,8 @@ void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
     uint16_t temp;
     switch (instruction->operation) {
         case CALL:
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF00) >> 8, cpu->current_state.SP - 1);
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes && 0xFF), cpu->current_state.SP - 2);
+            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->current_state.SP - 1);
+            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF), cpu->current_state.SP - 2);
             cpu->next_state.SP = cpu->current_state.SP - 2;
             cpu->next_state.PC = dest;
             break;
@@ -826,6 +826,7 @@ void init_cpu(CPU *cpu) {
     cpu->next_state.PC = 0;
     cpu->next_state.SP = 0xFFFE;
     cpu->next_state.CYCLE_COUNT = 0;
+    cpu->next_state.INSTRUCTION_COUNT = 0;
 
     cpu->current_state = cpu->next_state;
     cpu->CB_mode = 0;
@@ -851,6 +852,7 @@ void dump_registers(CPU *cpu) {
     printf("REGISTER VALUES:\n");
     printf("********************************\n");
     printf("Cycle Count: %d\n", cpu->current_state.CYCLE_COUNT);
+    printf("Instruction Count: %d\n", cpu->current_state.INSTRUCTION_COUNT);
     printf("PC: 0x%04X\n", cpu->current_state.PC);
     printf("SP: 0x%04X\n", cpu->current_state.SP);
     printf("A: 0x%02X\t", cpu->current_state.A);
@@ -979,14 +981,6 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     cpu->next_state.CYCLE_COUNT += instruction->unaccounted_cycles;  // add any cycles that weren't covered by memory R/W
 }
 
-void simulate_cycles(CPU *cpu) {
-    uint8_t cycles = cpu->next_state.CYCLE_COUNT - cpu->current_state.CYCLE_COUNT;
-
-    while (cycles > 0) {
-        cycles--; // add code to simulate real CPU speed
-    }
-}
-
 /************************************************************/
 /*                                                          */
 /* Procedure : step                                         */
@@ -1002,8 +996,8 @@ void step_cpu(CPU *cpu) {
         uint8_t opcode = fetch(cpu);
         decode(cpu, opcode, &dest, &src, &instruction);
         execute(cpu, &instruction, dest, src);
-        simulate_cycles(cpu);
     }
+    cpu->next_state.INSTRUCTION_COUNT = cpu->current_state.INSTRUCTION_COUNT + 1;
     cpu->current_state = cpu->next_state;
 }
 

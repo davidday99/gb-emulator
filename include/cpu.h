@@ -49,6 +49,7 @@ typedef struct Core {
     uint16_t SP;
     uint16_t PC;
     uint64_t CYCLE_COUNT;
+    uint64_t INSTRUCTION_COUNT;
 } Core;
 
 typedef struct CPU {
