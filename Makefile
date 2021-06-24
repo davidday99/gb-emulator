@@ -9,7 +9,8 @@ TESTS := $(wildcard $(TEST)/*.c)
 OBJS := $(addprefix $(ODIR)/,$(notdir $(SRCS:.c=.o)))
 TEST_OBJS := $(addprefix $(ODIR)/$(TEST)/,$(notdir $(TESTS:.c=.o)))
 
-CFLAGS := -I$(INCLUDE)
+GTK_DEP := `pkg-config --cflags --libs gtk+-3.0`
+CFLAGS := -I$(INCLUDE) $(GTK_DEP)
 
 sim: $(ODIR)/simulator
 
@@ -19,13 +20,13 @@ test: $(ODIR)/$(TEST)/test_runner
 	./$(ODIR)/$(TEST)/test_runner
 
 $(ODIR)/%.o: $(SRC)/%.c
-	$(CC) -o $@ $^ $(CFLAGS) -c -g $(debug)
+	$(CC) -o $@ $^ $(CFLAGS) -c -g `pkg-config --cflags --libs gtk+-3.0` $(debug)
 
 $(ODIR)/simulator: $(filter-out $(ODIR)/gb.o, $(OBJS))
-	$(CC) -o $@ $^ -g
+	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
 
 $(ODIR)/gb: $(filter-out $(ODIR)/simulator.o, $(OBJS))
-	$(CC) -o $@ $^ -g
+	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
 	$(CC) -o $@ $^ $(CFLAGS) -c -g
