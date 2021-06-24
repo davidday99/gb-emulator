@@ -42,7 +42,7 @@ int test_cb_row_d(CPU *cpu);
 int test_cb_row_e(CPU *cpu);
 int test_cb_row_f(CPU *cpu);
 
-/* Jumps */
+/* Control Instructions */
 int test_jr(CPU *cpu);
 int test_call(CPU *cpu);
 int test_rst(CPU *cpu);
