@@ -5,8 +5,8 @@
 #include "../include/isa-sm83.h"
 #include "../include/video.h"
 
-#define NUM_PIXELS_V 160
-#define NUM_PIXELS_H 144
+#define NUM_PIXELS_V 144
+#define NUM_PIXELS_H 160
 
 void init_video(Video *video, CPU *cpu) {
     video->interrupt_flag_register = &cpu->RAM[IF_REGISTER];
@@ -26,9 +26,9 @@ void init_video(Video *video, CPU *cpu) {
     video->oam = &cpu->RAM[OAM_ADDRESS];
     video->CYCLE_COUNT = 0;
 
-    video->buffer = (uint8_t**) malloc(sizeof(uint8_t*) * NUM_PIXELS_V);
-    for (uint8_t i; i < NUM_PIXELS_H; i++) {
-        *(video->buffer + i) = (uint8_t*) malloc(sizeof(uint8_t) * NUM_PIXELS_H);
+    video->buffer = (uint8_t**) calloc(sizeof(uint8_t*), NUM_PIXELS_V);
+    for (uint16_t i; i < NUM_PIXELS_H; i++) {
+        video->buffer[i] = (uint8_t*) calloc(sizeof(uint8_t), NUM_PIXELS_H);
     }
 }
 
@@ -64,22 +64,36 @@ void write_screen(Video *video, uint8_t row) {
 }
 
 void draw_background(Video *video) {
-    uint8_t *ptr;
-    uint8_t color;
-    if (*video->control & BG_TILE_MAP_DISP_SELECT_MASK) {
-        ptr = &video->vram[TILE_DISP_SELECT_1];
-    } else {
-        ptr = &video->vram[TILE_DISP_SELECT_0];
-    }
+    uint16_t tile_disp_select = (*video->control & BG_TILE_MAP_DISP_SELECT_MASK ) == 0 ? 0x9800 : 0x9C00;
 
-    for (uint8_t tile; tile < 32; tile++) {
-        uint16_t tile_num = get_tile_number(video, ptr, *video->ly, tile);
-        ptr += tile_num;
-        for (uint8_t pixel; pixel < 8; pixel++) {
-            video->buffer[*video->ly][pixel + (tile_num * 8)] = get_pixel_color(ptr, *video->ly, pixel);
+    for (uint8_t tile = 0; tile < 32; tile++) {
+        uint16_t tile_num = video->vram[tile_disp_select + ((*video->ly / 8) * 32) + tile];
+        tile_num *= 16;
+
+        uint16_t tile_addr = (*video->control & BG_WINDOW_TILE_DATA_SELECT_MASK) == 0 ? 0x8800 : 0x8000;
+
+        if (tile_addr == 0x8800) {
+            tile_addr += (int8_t) tile_num;
+        } else {
+            tile_addr += tile_num;
+        }
+
+        tile_addr += (*video->ly % 8) * 2;
+
+        uint8_t low = video->vram[tile_addr];
+        uint8_t high = video->vram[tile_addr + 1];
+
+        for (uint8_t pixel = 0; pixel < 8; pixel++) {
+            uint8_t mask = 1 << (7 - pixel);
+            uint8_t color;
+            if (pixel == 7) {
+                color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel - 1)));
+            } else {
+                color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
+            }
+            video->buffer[*video->ly][(tile * 8) + pixel] = color;
         }
     }
-
 }
 
 void draw_line(Video *video) {
@@ -107,12 +121,25 @@ void generate_v_blank(Video *video) {
 }
 
 void step_video(Video *video, uint64_t cycles) {
-    video->CYCLE_COUNT += cycles;
-    if (video->CYCLE_COUNT > ((uint32_t) (CPU_FREQ / (VIDEO_FREQ * 144)))) {
-        video->CYCLE_COUNT = video->CYCLE_COUNT - ((uint32_t) (CPU_FREQ / (VIDEO_FREQ * 144)));
-        if (*video->ly == 144) {
-            generate_v_blank(video);
+    if (*video->control & LCDC_CONTROL_OPERATION_MASK) {
+        video->CYCLE_COUNT += cycles;
+        if (video->CYCLE_COUNT > ((uint32_t) (CPU_FREQ / (VIDEO_FREQ * 144)))) {
+            video->CYCLE_COUNT = video->CYCLE_COUNT - ((uint32_t) (CPU_FREQ / (VIDEO_FREQ * 144)));
+            if (*video->ly == 144) {
+                generate_v_blank(video);
+            }
+            draw_line(video);
         }
-        draw_line(video);
+    } else {
+        *video->ly = 0;
     }
+}
+
+void print_buffer(Video *video) {
+  for (int i = 0; i < NUM_PIXELS_V; i++) {
+    for (int j = 0; j < NUM_PIXELS_H; j++) {
+      printf("%u ", video->buffer[i][j]);
+    }
+    printf("\n");
+  }
 }
