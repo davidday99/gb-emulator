@@ -231,7 +231,10 @@ uint8_t read_memory(CPU *cpu, uint16_t address) {
 }
 
 void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
-    cpu->RAM[address] = value;
+    if (address == P1_REGISTER)
+        return;
+    else 
+        cpu->RAM[address] = value;
     cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
 }
 
@@ -840,6 +843,9 @@ void init_cpu(CPU *cpu) {
     cpu->RAM[BGP_REGISTER] = 0xFC;
     cpu->RAM[OBP0_REGISTER] = 0xFF;
     cpu->RAM[OBP1_REGISTER] = 0xFF;
+
+    //TODO: remove once inputs are implemented
+    cpu->RAM[P1_REGISTER] = 0x0F;
 }
 
 /************************************************************/
