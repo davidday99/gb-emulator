@@ -6,7 +6,7 @@
 
 #define PIXEL_NUM 32 * 32 * 16
 
-#define OPERATION_MASK 127
+#define LCDC_CONTROL_OPERATION_MASK 128
 #define WINDOW_TILE_MAP_DISP_SELECT_MASK 64
 #define WINDOW_DISPLAY_MASK 32
 #define BG_WINDOW_TILE_DATA_SELECT_MASK 16
@@ -40,5 +40,6 @@ typedef struct Video {
 
 void init_video(Video *video, CPU *cpu);
 void step_video(Video *video, uint64_t cycles);
+void print_buffer(Video *video);
 
 #endif /* VIDEO_H */
