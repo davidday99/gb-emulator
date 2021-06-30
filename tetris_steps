@@ -1,0 +1,113 @@
+clear some mem
+enable v-blank
+set IE[0] (enable interrupts)
+clear SCY
+clear SCX
+clear 0xFFA4 (why?)
+clear STAT
+clear SB
+clear SC
+set LCDC[7] (start LCD operation)
+wait until LY == 148
+set LCDC[0] and LCDC[1] (turn on bg & window, sprite display)
+set BGP and OBP0 to standard settings (11 darkest, 00 lightest)
+set OBP1 to 0xC4 (11, 00, 01, 00)
+adjust sound registers
+store 1 at MEM[0x2000]
+set SP to 0xCFFF
+clear the first 256 bytes below and including 0xDFFF (WRAM)
+clear 2^12 bytes below and including 0xCFFF (WRAM, stack)
+clear memory from 0x8000 to 0x9000 (VRAM)
+clear 256 bytes below and including 0xFEFF (unusable)
+clear FF80 to FFFE (HRAM)
+starting at 0x2A7F, move 12 bytes to 0xFFB6
+
+-----------------------------
+cycle count: 458604
+instruction count: 55844
+-----------------------------
+
+---------------------------------------
+// graphics related subroutine
+jump to subroutine at 0x2795
+set memory to 0x2F from 0x9800 to 0x9BFF
+----------------------------------------
+
+----------------------------------------
+// sound related subroutine
+jump to subroutine at 0x7FF3
+jump to 0x69A5
+clear memory locations in 0xDFxx area
+set NR51 (0xFF25) to 0xFF
+store 0x03 at MEM[0xDF78]
+set NR12[7] (0xFF12)
+----------------------------------------- 
+
+set IE[4] and IE[1] (enable high-to-low interrupt)
+set MEM[0xFFC0] to 0x37
+set MEM[0xFFC1] to 0x1C
+set MEM[0xFFE1] to 0x24
+set LCDC[7] (start LCD operation)
+enable IME
+clear IF register
+clear WY
+clear WX
+clear TMA
+
+------------------------------------------
+// input handling subroutine ?
+jump to subroutine at 0x29A6
+set P1[5] (0xFF00) (P15 out port)
+load P1 into A, repeat a few times (waiting?)
+complement A
+clear bottom 4 bits of A
+swap nibbles of A
+store A in B
+load A with 0x10
+store A in P1 (P14 out port)
+load P1 into A, repeat a few times (waiting?)
+complement A
+clear bottom 4 bits of A
+OR A and B
+store A in C
+load 0xFF80 (HRAM) into A
+other weird logic with A, C
+store back into P1
+-------------------------------------------
+
+-----------------------------
+cycle count: 504592
+instruction count: 62072
+-----------------------------
+
+
+--------------------------------------------
+CALL 0x02F8
+load MEM[0xFFE1] into A
+RST 28H
+    ------------------------
+    CALL 0x2820
+    load IE into A
+    store A into MEM[0xFFA1]
+    clear A[0]
+    store A into IE (0xFFFF)
+    loop until LY == 145
+    load MEM[0xFFA1] into A
+    store A in IE
+    ------------------------
+
+    ------------------------
+    CALL 0x27D7
+        ------------------------
+        CALL 0x27C3
+        move values from ROM to 0x8000 (VRAM)
+
+write values to tile map and tile number table
+turn on LCD, allow it to write all values
+set 0xFFA6 to 250
+-----------------------------
+cycle count: 823612
+instruction count: 101147
+-----------------------------
+
+wait until LY reaches 148, then turn off LCD and clear portions of VRAM
