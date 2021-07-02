@@ -14,7 +14,9 @@ CFLAGS := -I$(INCLUDE) $(GTK_DEP)
 
 sim: $(ODIR)/simulator
 
-gb: $(ODIR)/gb
+gb-cli: $(ODIR)/gb-cli
+
+gb-gui: $(ODIR)/gb-gui
 
 test: $(ODIR)/$(TEST)/test_runner
 	./$(ODIR)/$(TEST)/test_runner
@@ -22,10 +24,13 @@ test: $(ODIR)/$(TEST)/test_runner
 $(ODIR)/%.o: $(SRC)/%.c
 	$(CC) -o $@ $^ $(CFLAGS) -c -g `pkg-config --cflags --libs gtk+-3.0` $(debug)
 
-$(ODIR)/simulator: $(filter-out $(ODIR)/gb.o, $(OBJS))
+$(ODIR)/simulator: $(filter-out $(ODIR)/gb_cli.o $(ODIR)/gb_gui.o, $(OBJS))
 	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
 
-$(ODIR)/gb: $(filter-out $(ODIR)/simulator.o, $(OBJS))
+$(ODIR)/gb-cli: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_gui.o, $(OBJS))
+	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
+
+$(ODIR)/gb-gui: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_cli.o, $(OBJS))
 	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
@@ -40,4 +45,4 @@ clean:
 $(shell mkdir -p $(ODIR))
 $(shell mkdir -p $(ODIR)/$(TEST))
 
-.PHONY: sim gb test clean
+.PHONY: sim gb-cli gb-gui test clean
