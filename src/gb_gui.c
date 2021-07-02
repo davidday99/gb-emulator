@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "../include/cpu.h"
-#include "../include/video.h"
+#include "../include/ppu.h"
 #include "../include/screen.h"
 #include <gtk-3.0/gtk/gtk.h>
 
@@ -14,15 +14,12 @@ static gboolean on_timeout(gpointer user_data) {
     static int8_t flag = 0;
     GB *gb = (GB*) user_data;
 
-    //printf("timeout!\n");
-
     uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
     step_cpu(&(gb->cpu));
     step_video(&(gb->video), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
     if (*(gb->video.ly) == 144) {
         if (flag == 0) {
             gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
-            //print_buffer(&(gb->video));
             flag = 1;
         }
     } else {

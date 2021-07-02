@@ -15,15 +15,6 @@ enum Color {
   BLACK
 };
 
-// #define LEFT_MARGIN 10
-// #define TOP_MARGIN 10
-// #define RIGHT_MARGIN 10
-// #define BOTTOM_MARGIN 10
-// #define SCREEN_HEIGHT 144
-// #define SCREEN_WIDTH 160
-// #define WINDOW_HEIGHT SCREEN_HEIGHT + TOP_MARGIN + BOTTOM_MARGIN
-// #define WINDOW_WIDTH SCREEN_WIDTH + LEFT_MARGIN + RIGHT_MARGIN
-
 static void do_drawing(cairo_t* cr, gpointer screen);
 
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
@@ -50,8 +41,6 @@ static void draw_pixel(cairo_t *cr, int x, int y, enum Color color) {
     return;
   }
 
-  // cairo_move_to(cr, x, y);
-  // cairo_line_to(cr, x + 1, y);
   cairo_rectangle(cr, x, y, SCALE, SCALE);
   cairo_stroke(cr);    
 }
@@ -60,13 +49,6 @@ static void do_drawing(cairo_t *cr, gpointer screen) {
   Screen *s = (Screen*) screen;
   cairo_set_source_rgb(cr, 0, 0, 0);
   cairo_set_line_width(cr, SCALE);
-
-  // for (int i = 0; i < SCREEN_HEIGHT; i++) {
-  //   for (int j = 0; j < SCREEN_WIDTH; j++) {
-  //     srand(time(NULL));
-  //     s->data[i][j] = rand() % 4;
-  //   }
-  // }
 
   for (int i = 0; i < SCREEN_HEIGHT; i++) {
     for (int j = 0; j < SCREEN_WIDTH; j++) {

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../include/cpu.h"
 #include "../include/isa-sm83.h"
-#include "../include/video.h"
+#include "../include/ppu.h"
 
 #define NUM_PIXELS_V 144
 #define NUM_PIXELS_H 160
