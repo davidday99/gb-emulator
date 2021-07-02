@@ -1,4 +1,4 @@
-#ifndef
+#ifndef SCREEN_H
 #define SCREEN_H
 
 #include <gtk-3.0/gtk/gtk.h>
