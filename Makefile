@@ -22,16 +22,16 @@ test: $(ODIR)/$(TEST)/test_runner
 	./$(ODIR)/$(TEST)/test_runner
 
 $(ODIR)/%.o: $(SRC)/%.c
-	$(CC) -o $@ $^ $(CFLAGS) -c -g `pkg-config --cflags --libs gtk+-3.0` $(debug)
+	$(CC) -o $@ $^ $(CFLAGS) -c -g $(debug)
 
 $(ODIR)/simulator: $(filter-out $(ODIR)/gb_cli.o $(ODIR)/gb_gui.o, $(OBJS))
-	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
+	$(CC) -o $@ $^ $(CFLAGS) -g
 
 $(ODIR)/gb-cli: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_gui.o, $(OBJS))
-	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
+	$(CC) -o $@ $^ $(CFLAGS) -g
 
 $(ODIR)/gb-gui: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_cli.o, $(OBJS))
-	$(CC) -o $@ $^ -g `pkg-config --cflags --libs gtk+-3.0`
+	$(CC) -o $@ $^ $(CFLAGS) -g
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
 	$(CC) -o $@ $^ $(CFLAGS) -c -g
