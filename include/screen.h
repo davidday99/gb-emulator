@@ -1,3 +1,6 @@
+#ifndef
+#define SCREEN_H
+
 #include <gtk-3.0/gtk/gtk.h>
 #include <stdint.h>
 
@@ -25,3 +28,5 @@ void init_screen(Screen *screen, uint8_t **buffer);
 void show_screen(Screen *screen);
 void draw_line(Screen *screen);
 void draw_screen(Screen *screen);
+
+#endif /* SCREEN_H */
