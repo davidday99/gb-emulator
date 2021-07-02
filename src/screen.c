@@ -2,8 +2,11 @@
 #include <gtk-3.0/gtk/gtk.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "screen.h"
+
+#define SCALE 4
 
 enum Color {
   WHITE,
@@ -12,21 +15,21 @@ enum Color {
   BLACK
 };
 
-#define LEFT_MARGIN 10
-#define TOP_MARGIN 10
-#define RIGHT_MARGIN 10
-#define BOTTOM_MARGIN 10
-#define SCREEN_HEIGHT 144
-#define SCREEN_WIDTH 160
-#define WINDOW_HEIGHT SCREEN_HEIGHT + TOP_MARGIN + BOTTOM_MARGIN
-#define WINDOW_WIDTH SCREEN_WIDTH + LEFT_MARGIN + RIGHT_MARGIN
+// #define LEFT_MARGIN 10
+// #define TOP_MARGIN 10
+// #define RIGHT_MARGIN 10
+// #define BOTTOM_MARGIN 10
+// #define SCREEN_HEIGHT 144
+// #define SCREEN_WIDTH 160
+// #define WINDOW_HEIGHT SCREEN_HEIGHT + TOP_MARGIN + BOTTOM_MARGIN
+// #define WINDOW_WIDTH SCREEN_WIDTH + LEFT_MARGIN + RIGHT_MARGIN
 
 static void do_drawing(cairo_t* cr, gpointer screen);
 
 static gboolean on_draw_event(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
   do_drawing(cr, user_data);
 
-  return FALSE;
+  return TRUE;
 }
 
 static void draw_pixel(cairo_t *cr, int x, int y, enum Color color) {
@@ -34,32 +37,40 @@ static void draw_pixel(cairo_t *cr, int x, int y, enum Color color) {
   case BLACK:
     cairo_set_source_rgb(cr, 0, 0, 0); // black
     break;
+  case D_GRAY:
+    cairo_set_source_rgb(cr, 0.25, 0.25, 0.25); // dark gray
+    break;
   case L_GRAY:
     cairo_set_source_rgb(cr, 0.5, 0.5, 0.5); // light gray
     break;
-  case D_GRAY:
-    cairo_set_source_rgb(cr, 0.25, 0.25, 0.25); // dark gray
   case WHITE:
-    //cairo_set_source_rgb(cr, 1, 1, 1); // white
-    return;
+    cairo_set_source_rgb(cr, 1, 1, 1); // white
     break;
   default:
-    break;
+    return;
   }
-  cairo_move_to(cr, x, y);
-  cairo_line_to(cr, x + 1, y);
+
+  // cairo_move_to(cr, x, y);
+  // cairo_line_to(cr, x + 1, y);
+  cairo_rectangle(cr, x, y, SCALE, SCALE);
   cairo_stroke(cr);    
 }
 
 static void do_drawing(cairo_t *cr, gpointer screen) {
-  screen = (Screen*) screen;
   Screen *s = (Screen*) screen;
   cairo_set_source_rgb(cr, 0, 0, 0);
-  cairo_set_line_width(cr, 2);
+  cairo_set_line_width(cr, SCALE);
+
+  // for (int i = 0; i < SCREEN_HEIGHT; i++) {
+  //   for (int j = 0; j < SCREEN_WIDTH; j++) {
+  //     srand(time(NULL));
+  //     s->data[i][j] = rand() % 4;
+  //   }
+  // }
 
   for (int i = 0; i < SCREEN_HEIGHT; i++) {
     for (int j = 0; j < SCREEN_WIDTH; j++) {
-      draw_pixel(cr, LEFT_MARGIN + j, TOP_MARGIN + i, s->data[i][j]);
+      draw_pixel(cr, (LEFT_MARGIN + j) * SCALE, (TOP_MARGIN + i) * SCALE, s->data[i][j]);
     }
   }
 }
@@ -82,7 +93,7 @@ void init_screen(Screen *screen, uint8_t **buffer) {
       G_CALLBACK(gtk_main_quit), NULL);  
  
   gtk_window_set_position(GTK_WINDOW(screen->window.wind), GTK_WIN_POS_CENTER);
-  gtk_window_set_default_size(GTK_WINDOW(screen->window.wind), WINDOW_HEIGHT, WINDOW_WIDTH); 
+  gtk_window_set_default_size(GTK_WINDOW(screen->window.wind), WINDOW_WIDTH * SCALE, WINDOW_HEIGHT * SCALE); 
   gtk_window_set_title(GTK_WINDOW(screen->window.wind), "GB Emulator");
 }
 
