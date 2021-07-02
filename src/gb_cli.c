@@ -2,35 +2,6 @@
 #include "../include/cpu.h"
 #include "../include/video.h"
 #include "../include/screen.h"
-#include <gtk-3.0/gtk/gtk.h>
-
-typedef struct GB {
-    CPU cpu;
-    Video video;
-    Screen screen;
-} GB;
-
-static gboolean on_timeout(gpointer user_data) {
-    static int8_t flag = 0;
-    GB *gb = (GB*) user_data;
-
-    //printf("timeout!\n");
-
-    uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
-    step_cpu(&(gb->cpu));
-    step_video(&(gb->video), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
-    if (*(gb->video.ly) == 144) {
-        if (flag == 0) {
-            gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
-            //print_buffer(&(gb->video));
-            flag = 1;
-        }
-    } else {
-        flag = 0;
-    }
-
-    return G_SOURCE_CONTINUE;
-}
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -45,14 +16,32 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    GB gb;
+    CPU cpu;
+    Video video;
+    Screen screen;
 
-    init_cpu(&gb.cpu);
-    init_video(&gb.video, &gb.cpu);
-    init_screen(&gb.screen, gb.video.buffer);
-    load_program(f, &gb.cpu);
+    init_cpu(&cpu);
+    init_video(&video, &cpu);
+    init_screen(&screen, video.buffer);
+    load_program(f, &cpu);
 
-    g_timeout_add(1, on_timeout, &gb);
-
-    show_screen(&(gb.screen));
+    uint64_t prev_cycles;
+    uint8_t flag = 0;
+    //show_screen(&screen);
+    while (1) {
+        prev_cycles = cpu.current_state.CYCLE_COUNT;
+        step_cpu(&cpu);
+        step_video(&video, cpu.current_state.CYCLE_COUNT - prev_cycles);
+        if (*video.ly == 144) {
+            if (flag == 0) {
+               //draw_screen(&screen);
+               print_buffer(&video);
+               flag = 1;
+            }
+        } else {
+            flag = 0;
+        }
+        uint16_t cnt = 0;
+        //while (++cnt > 0);
+    }
 }
