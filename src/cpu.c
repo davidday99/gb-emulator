@@ -75,6 +75,7 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
 }
 
 void write_register(CPU *cpu, enum operand reg, uint16_t value) {
+    // not necessary? register fields should implicitly cast to uint8_t
     if (reg <= L) {
         value = (uint8_t) value;
     } 
@@ -255,6 +256,7 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
             op = get_register_value(cpu, operand);
 
             if (operand == C) {
+                op &= 0x00FF;
                 op += 0xFF00;
             }
             break;
@@ -738,7 +740,9 @@ void service_v_blank(CPU *cpu) {
         write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
         write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
         cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->current_state.SP = cpu->next_state.SP;
         cpu->next_state.PC = V_BLANK_ADDRESS;
+        cpu->current_state.PC = cpu->next_state.PC;
     }
 }
 
@@ -749,7 +753,9 @@ void service_lcdc_status(CPU *cpu) {
         write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
         write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
         cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->current_state.SP = cpu->next_state.SP;
         cpu->next_state.PC = LCDC_STATUS_ADDRESS;
+        cpu->current_state.PC = cpu->next_state.PC;
     }
 }
 
@@ -835,10 +841,12 @@ void init_cpu(CPU *cpu) {
 
     cpu->current_state = cpu->next_state;
     cpu->CB_mode = 0;
+    cpu->interrupts_enabled = 0;
     cpu->stopped = 0;
     cpu->low_power_mode = 0;
     
     memset(cpu->RAM, 0, sizeof(cpu->RAM));
+    cpu->RAM[IF_REGISTER] = 0xE0;
     cpu->RAM[LCDC_REGISTER] = 0x91;
     cpu->RAM[BGP_REGISTER] = 0xFC;
     cpu->RAM[OBP0_REGISTER] = 0xFF;
