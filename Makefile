@@ -11,6 +11,7 @@ TEST_OBJS := $(addprefix $(ODIR)/$(TEST)/,$(notdir $(TESTS:.c=.o)))
 
 GTK_DEP := `pkg-config --cflags --libs gtk+-3.0`
 CFLAGS := -I$(INCLUDE) $(GTK_DEP)
+DEFINE := -D$(DEF)
 
 sim: $(ODIR)/simulator
 
@@ -22,22 +23,26 @@ test: $(ODIR)/$(TEST)/test_runner
 	./$(ODIR)/$(TEST)/test_runner
 
 $(ODIR)/%.o: $(SRC)/%.c
-	$(CC) -o $@ $^ $(CFLAGS) -c -g $(debug)
+ifeq ($(debug), 1)
+	$(CC) -o $@ $^ -c -g -DDEBUG $(CFLAGS)
+else
+	$(CC) -o $@ $^ -c -g $(CFLAGS)
+endif
 
 $(ODIR)/simulator: $(filter-out $(ODIR)/gb_cli.o $(ODIR)/gb_gui.o, $(OBJS))
-	$(CC) -o $@ $^ $(CFLAGS) -g
+	$(CC) -o $@ $^ -g $(CFLAGS)
 
 $(ODIR)/gb-cli: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_gui.o, $(OBJS))
-	$(CC) -o $@ $^ $(CFLAGS) -g
+	$(CC) -o $@ $^ -g $(CFLAGS)
 
 $(ODIR)/gb-gui: $(filter-out $(ODIR)/simulator.o $(ODIR)/gb_cli.o, $(OBJS))
-	$(CC) -o $@ $^ $(CFLAGS) -g
+	$(CC) -o $@ $^ -g $(CFLAGS)
 
 $(ODIR)/$(TEST)/%.o: $(TEST)/%.c 
-	$(CC) -o $@ $^ $(CFLAGS) -c -g
+	$(CC) -o $@ $^ -c -g $(CFLAGS)
 
 $(ODIR)/$(TEST)/test_runner: $(TEST_OBJS) $(ODIR)/cpu.o $(ODIR)/isa-sm83.o
-	$(CC) -o $@ $^ -g
+	$(CC) -o $@ $^ -g $(CFLAGS)
 
 clean:
 	rm -rf $(ODIR)/*
