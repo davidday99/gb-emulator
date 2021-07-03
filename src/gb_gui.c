@@ -14,18 +14,20 @@ static gboolean on_timeout(gpointer user_data) {
     static int8_t flag = 0;
     GB *gb = (GB*) user_data;
 
-    uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
-    step_cpu(&(gb->cpu));
-    step_video(&(gb->video), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
-    if (*(gb->video.ly) == 144) {
-        if (flag == 0) {
-            gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
-            flag = 1;
+    for (uint16_t i = 0; i < 1000; i++) {
+        uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
+        step_cpu(&(gb->cpu));
+        step_video(&(gb->video), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
+        if (*(gb->video.ly) == 144) {
+            if (flag == 0) {
+                gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
+                flag = 1;
+            }
+        } else {
+            flag = 0;
         }
-    } else {
-        flag = 0;
     }
-
+    
     return G_SOURCE_CONTINUE;
 }
 
