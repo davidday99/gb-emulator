@@ -19,4 +19,4 @@ There are four different executables available that can be built using Make. Res
 
 ## Misc
 
-- Run *make* with the argument *debug=1* to print each instruction to stdin as it executes.
+- Run *make* with the additional argument *debug=1* to print each instruction to stdin as it executes.
