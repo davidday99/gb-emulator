@@ -66,7 +66,7 @@ void write_screen(Video *video, uint8_t row) {
 void draw_background(Video *video) {
     uint16_t tile_disp_select = (*video->control & BG_TILE_MAP_DISP_SELECT_MASK ) == 0 ? 0x9800 : 0x9C00;
 
-    for (uint8_t tile = 0; tile < 32; tile++) {
+    for (uint8_t tile = 0; tile < 20; tile++) {
         uint16_t tile_num = video->vram[tile_disp_select + ((*video->ly / 8) * 32) + tile];
         tile_num *= 16;
 
@@ -87,7 +87,7 @@ void draw_background(Video *video) {
             uint8_t mask = 1 << (7 - pixel);
             uint8_t color;
             if (pixel == 7) {
-                color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel - 1)));
+                color = (low & mask) | ((high & mask) << 1);
             } else {
                 color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
             }
@@ -96,17 +96,25 @@ void draw_background(Video *video) {
     }
 }
 
+void draw_sprites(Video *video) {
+    return;
+}
+
+void draw_window(Video *video) {
+    return;
+}
+
 void draw_line(Video *video) {
     if (*video->ly < 144) {
         if (*video->control & BG_WINDOW_DISPLAY_MASK) {
             draw_background(video);
         }
-        // if (*video->control & WINDOW_DISPLAY_MASK) {
-        //     draw_window();
-        // }
-        // if (*video->control & OBJ_DISP_MASK) {
-        //     draw_sprites();
-        // }
+        if (*video->control & WINDOW_DISPLAY_MASK) {
+            draw_sprites(video);
+        }
+        if (*video->control & OBJ_DISP_MASK) {
+            draw_window(video);
+        }
     }
 
     if (*video->ly <= 153) {
