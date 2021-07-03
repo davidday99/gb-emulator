@@ -65,13 +65,15 @@ void write_screen(Video *video, uint8_t row) {
 
 void draw_background(Video *video) {
     uint16_t tile_disp_select = (*video->control & BG_TILE_MAP_DISP_SELECT_MASK ) == 0 ? 0x9800 : 0x9C00;
-    uint8_t scroll_offset = *video->scx / 8;
+    uint8_t scx_offset = *video->scx / 8;
+    uint8_t scy_offset = *video->scy * 32;
     uint8_t pixel_offset = *video->scx % 8;
 
     for (uint8_t tile = 0; tile < 20; tile++) {
         uint16_t tile_num = video->vram[tile_disp_select + ((*video->ly / 8) * 32) + tile];
 
-        tile_num += scroll_offset;
+        tile_num += scx_offset;
+        tile_num += scy_offset;
 
         tile_num *= 16;
 
@@ -109,7 +111,7 @@ void draw_background(Video *video) {
     // if SCROLLX % 8 != 0, we need to fetch extra pixels from one extra tile
     if (pixel_offset != 0) {
         uint16_t tile_num = video->vram[tile_disp_select + ((*video->ly / 8) * 32) + 20];
-        tile_num += scroll_offset;
+        tile_num += scx_offset;
 
         tile_num *= 16;
 
