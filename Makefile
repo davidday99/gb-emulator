@@ -13,6 +13,8 @@ GTK_DEP := `pkg-config --cflags --libs gtk+-3.0`
 CFLAGS := -I$(INCLUDE) $(GTK_DEP)
 DEFINE := -D$(DEF)
 
+all: sim gb-cli gb-gui 
+
 sim: $(ODIR)/simulator
 
 gb-cli: $(ODIR)/gb-cli
