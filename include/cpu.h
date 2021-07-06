@@ -8,9 +8,9 @@
 #define MEM_CYCLE_DELAY 4
 #define JUMP_DELAY 4
 #define ALU_DELAY_16_BIT 4
+#define DMA_CYCLE_DELAY 160
 
 #define CPU_FREQ 4194304
-#define V_BLANK_FREQ 60
 
 typedef struct Core {
     union {
@@ -60,6 +60,7 @@ typedef struct CPU {
     uint8_t interrupts_enabled;
     uint8_t stopped;
     uint8_t low_power_mode;
+    uint8_t dma_flag;
 } CPU;
 
 void init_cpu(CPU *cpu);

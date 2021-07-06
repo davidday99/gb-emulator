@@ -236,6 +236,10 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
         return;
     else 
         cpu->RAM[address] = value;
+
+    if (address == DMA_REGISTER)
+        cpu->dma_flag = 1;
+
     cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
 }
 
@@ -844,6 +848,7 @@ void init_cpu(CPU *cpu) {
     cpu->interrupts_enabled = 0;
     cpu->stopped = 0;
     cpu->low_power_mode = 0;
+    cpu->dma_flag = 0;
     
     memset(cpu->RAM, 0, sizeof(cpu->RAM));
     cpu->RAM[IF_REGISTER] = 0xE0;
@@ -854,6 +859,13 @@ void init_cpu(CPU *cpu) {
 
     //TODO: remove once inputs are implemented
     cpu->RAM[P1_REGISTER] = 0x0F;
+}
+
+void handle_dma(CPU *cpu) {
+    cpu->dma_flag = 0;
+    uint16_t src_address = cpu->RAM[DMA_REGISTER] << 8;
+    memcpy(&(cpu->RAM[OAM_ADDRESS]), &(cpu->RAM[src_address]), sizeof(uint8_t) * 0x9F);
+    cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT + DMA_CYCLE_DELAY;
 }
 
 /************************************************************/
@@ -869,7 +881,7 @@ void dump_registers(CPU *cpu) {
     printf("********************************\n");
     printf("Cycle Count: %d\n", cpu->current_state.CYCLE_COUNT);
     printf("Instruction Count: %d\n", cpu->current_state.INSTRUCTION_COUNT);
-    printf("PC: 0x%04X\n", cpu->current_state.PC);
+    printf("PC: write_mex%04X\n", cpu->current_state.PC);
     printf("SP: 0x%04X\n", cpu->current_state.SP);
     printf("A: 0x%02X\t", cpu->current_state.A);
     printf("F: 0x%02X\n", cpu->current_state.F);
@@ -1010,6 +1022,9 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
 void step_cpu(CPU *cpu) {
     uint8_t running = !cpu->stopped & !cpu->low_power_mode;
     if (running) {
+        if (cpu->dma_flag) {
+            handle_dma(cpu);
+        }
         uint16_t dest, src;
         Instruction instruction;
         uint8_t opcode = fetch(cpu);
