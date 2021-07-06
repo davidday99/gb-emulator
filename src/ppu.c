@@ -146,10 +146,12 @@ void draw_background(Video *video) {
     }
 }
 
-uint8_t search_oam(Video *video, uint8_t saveidx) {
+uint16_t search_oam(Video *video, uint8_t saveidx) {
+    uint8_t y_bound = (*video->control & OBJ_SIZE_MASK) ? 0 : 8;
     for (uint8_t i = saveidx; i < 160; i += 4) {
-        if (video->vram[OAM_ADDRESS + i] == *video->ly)
-            return i;
+        int16_t y_pos = video->vram[OAM_ADDRESS + i];
+        if (*video->ly >= y_pos - 16 && *video->ly < y_pos - y_bound)
+            return OAM_ADDRESS + i;
     }
     return UINT8_MAX;
 }
@@ -161,13 +163,13 @@ uint8_t get_obp0_color(Video *video, uint8_t color) {
             new_color = *video->obp0 & 3;
             break;
         case 1:
-            new_color = *video->obp0 & 12;
+            new_color = (*video->obp0 & 12) >> 2;
             break;
         case 2:
-            new_color = *video->obp0 & 48;
+            new_color = (*video->obp0 & 48) >> 4;
             break;
         case 3:
-            new_color = *video->obp0 & 192;
+            new_color = (*video->obp0 & 192) >> 6;
             break;
         default:
             break;
@@ -179,7 +181,7 @@ uint8_t get_obp0_color(Video *video, uint8_t color) {
 void draw_sprites(Video *video) {
     uint8_t saveidx = 0;
     for (uint8_t sprite_num = 0; sprite_num <= 10; sprite_num++) {
-        uint8_t oam_entry = search_oam(video, saveidx);
+        uint16_t oam_entry = search_oam(video, saveidx);
 
         // no more sprites on this line
         if (oam_entry == UINT8_MAX) {
@@ -190,7 +192,7 @@ void draw_sprites(Video *video) {
 
         uint8_t y_pos;
         uint8_t x_pos = video->vram[oam_entry + 1];
-        uint8_t tile_num = video->vram[oam_entry + 2];
+        uint16_t tile_num = video->vram[oam_entry + 2];
         uint8_t attributes = video->vram[oam_entry + 3];
         
         uint8_t tile_data_len;
@@ -202,7 +204,7 @@ void draw_sprites(Video *video) {
             tile_offset = (*video->ly % 16) * 2;
         } else {
             tile_data_len = 14;
-            (*video->ly % 8) * 2;
+            tile_offset = (*video->ly % 8) * 2;
         }
 
         tile_num *= 16;
@@ -230,11 +232,11 @@ void draw_sprites(Video *video) {
                 } else {
                     color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
                 }
-                video->buffer[*video->ly][x_pos + pixel] = get_obp0_color(video, color);
+                video->buffer[*video->ly][x_pos - pixel] = get_obp0_color(video, color);
             }
         } else {
             pixel = 0;
-            for (; pixel < 8; pixel++) {
+            for (; pixel < 8 && x_pos - 8 >= 0; pixel++) {
                 uint8_t mask = 1 << (7 - pixel);
                 uint8_t color;
                 if (pixel == 7) {
@@ -242,7 +244,7 @@ void draw_sprites(Video *video) {
                 } else {
                     color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
                 }
-                video->buffer[*video->ly][x_pos + pixel] = get_obp0_color(video, color);
+                video->buffer[*video->ly][x_pos - (7 - pixel)] = get_obp0_color(video, color);
             }
         }
     }
@@ -257,10 +259,10 @@ void draw_line(Video *video) {
         if (*video->control & BG_WINDOW_DISPLAY_MASK) {
             draw_background(video);
         }
-        if (*video->control & OBJ_DISP_MASK) {
+        if (*video->control & WINDOW_DISPLAY_MASK) {
             draw_window(video);
         }
-        if (*video->control & WINDOW_DISPLAY_MASK) {
+        if (*video->control & OBJ_DISP_MASK) {
             draw_sprites(video);
         }
     }
