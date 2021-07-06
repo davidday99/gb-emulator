@@ -8,6 +8,12 @@
 #define NUM_PIXELS_V 144
 #define NUM_PIXELS_H 160
 
+#define PRIORITY_MASK 0x80
+#define Y_FLIP_MASK 0x40
+#define X_FLIP_MASK 0x20
+#define PALETTE_NUM_MASK 0x10
+#define OAM_ENTRIES 40
+
 void init_video(Video *video, CPU *cpu) {
     video->interrupt_flag_register = &cpu->RAM[IF_REGISTER];
     video->control = &cpu->RAM[LCDC_REGISTER];
@@ -18,7 +24,7 @@ void init_video(Video *video, CPU *cpu) {
     video->lyc = &cpu->RAM[LYC_REGISTER];
     video->dma_start = &cpu->RAM[DMA_REGISTER];
     video->bgp = &cpu->RAM[BGP_REGISTER];
-    video->obpo = &cpu->RAM[OBP0_REGISTER];
+    video->obp0 = &cpu->RAM[OBP0_REGISTER];
     video->obp1 = &cpu->RAM[OBP1_REGISTER];
     video->wy = &cpu->RAM[WY_REGISTER];
     video->wx = &cpu->RAM[WX_REGISTER];
@@ -140,8 +146,106 @@ void draw_background(Video *video) {
     }
 }
 
+uint8_t search_oam(Video *video, uint8_t saveidx) {
+    for (uint8_t i = saveidx; i < 160; i += 4) {
+        if (video->vram[OAM_ADDRESS + i] == *video->ly)
+            return i;
+    }
+    return UINT8_MAX;
+}
+
+uint8_t get_obp0_color(Video *video, uint8_t color) {
+    uint8_t new_color = 0;
+    switch (color) {
+        case 0:
+            new_color = *video->obp0 & 3;
+            break;
+        case 1:
+            new_color = *video->obp0 & 12;
+            break;
+        case 2:
+            new_color = *video->obp0 & 48;
+            break;
+        case 3:
+            new_color = *video->obp0 & 192;
+            break;
+        default:
+            break;
+    }
+    return new_color;
+}
+
+// TODO: handle x-pos. conflicts 
 void draw_sprites(Video *video) {
-    return;
+    uint8_t saveidx = 0;
+    for (uint8_t sprite_num = 0; sprite_num <= 10; sprite_num++) {
+        uint8_t oam_entry = search_oam(video, saveidx);
+
+        // no more sprites on this line
+        if (oam_entry == UINT8_MAX) {
+            return;
+        }
+
+        saveidx = oam_entry + 4;
+
+        uint8_t y_pos;
+        uint8_t x_pos = video->vram[oam_entry + 1];
+        uint8_t tile_num = video->vram[oam_entry + 2];
+        uint8_t attributes = video->vram[oam_entry + 3];
+        
+        uint8_t tile_data_len;
+        uint8_t tile_offset;
+
+        if (*video->control & OBJ_SIZE_MASK) {
+            tile_num &= 0xFE;
+            tile_data_len = 30;
+            tile_offset = (*video->ly % 16) * 2;
+        } else {
+            tile_data_len = 14;
+            (*video->ly % 8) * 2;
+        }
+
+        tile_num *= 16;
+        uint16_t tile_addr = 0x8000;
+        tile_addr += tile_num;
+
+        if (attributes & Y_FLIP_MASK) {
+            tile_addr += tile_data_len - tile_offset;
+        } else {
+            tile_addr += tile_offset;
+        }
+
+        uint8_t low = video->vram[tile_addr];
+        uint8_t high = video->vram[tile_addr + 1];
+
+        int8_t pixel;
+
+        if (attributes & X_FLIP_MASK) {
+            pixel = 7;
+            for (; pixel >= 0; pixel--) {
+                uint8_t mask = 1 << (7 - pixel);
+                uint8_t color;
+                if (pixel == 7) {
+                    color = (low & mask) | ((high & mask) << 1);
+                } else {
+                    color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
+                }
+                video->buffer[*video->ly][x_pos + pixel] = get_obp0_color(video, color);
+            }
+        } else {
+            pixel = 0;
+            for (; pixel < 8; pixel++) {
+                uint8_t mask = 1 << (7 - pixel);
+                uint8_t color;
+                if (pixel == 7) {
+                    color = (low & mask) | ((high & mask) << 1);
+                } else {
+                    color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
+                }
+                video->buffer[*video->ly][x_pos + pixel] = get_obp0_color(video, color);
+            }
+        }
+    }
 }
 
 void draw_window(Video *video) {
@@ -153,11 +257,11 @@ void draw_line(Video *video) {
         if (*video->control & BG_WINDOW_DISPLAY_MASK) {
             draw_background(video);
         }
-        if (*video->control & WINDOW_DISPLAY_MASK) {
-            draw_sprites(video);
-        }
         if (*video->control & OBJ_DISP_MASK) {
             draw_window(video);
+        }
+        if (*video->control & WINDOW_DISPLAY_MASK) {
+            draw_sprites(video);
         }
     }
 
