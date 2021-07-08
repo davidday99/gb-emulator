@@ -8,7 +8,6 @@
 #include "../include/cpu.h"
 #include "../include/isa-sm83.h"
 
-#define Low16bits(x) ((x) & 0xFFFF)
 #define Low8bits(x) ((x) & 0xFF)
 
 void enable_interrupts(CPU *cpu);
@@ -75,11 +74,6 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
 }
 
 void write_register(CPU *cpu, enum operand reg, uint16_t value) {
-    // not necessary? register fields should implicitly cast to uint8_t
-    if (reg <= L) {
-        value = (uint8_t) value;
-    } 
-
     switch (reg) {
         case A:
             cpu->next_state.A = value;
@@ -520,6 +514,14 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
     cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
 }
 
+/************************************************************/
+/*                                                          */
+/* Procedure : get_bit                                      */
+/*                                                          */
+/* Purpose   : Decode which bit is being operated on based  */ 
+/*             on the opcode                                */
+/*                                                          */
+/************************************************************/
 uint8_t get_bit(uint8_t opcode) {
     uint8_t high_nibble = (opcode & 0xF0) >> 4;
     uint8_t low_nibble = opcode & 0xF;
@@ -673,7 +675,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 
 /************************************************************/
 /*                                                          */
-/* CPU FUNCTIONS                                            */
+/* CPU CONTROL FUNCTIONS                                    */
 /*                                                          */
 /************************************************************/
 
@@ -684,7 +686,6 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
 /* Purpose   : Enable CB Mode when a CB prefix is fetched   */ 
 /*                                                          */
 /************************************************************/
-
 void enable_cb_mode(CPU *cpu) {
     cpu->CB_mode = 1;
 }
@@ -697,7 +698,6 @@ void enable_cb_mode(CPU *cpu) {
 /*             is executed                                  */
 /*                                                          */
 /************************************************************/
-
 void disable_cb_mode(CPU *cpu) {
     cpu->CB_mode = 0;
 }
@@ -720,7 +720,6 @@ void toggle_cb_mode(CPU *cpu) {
 /* Purpose   : Enable CPU interrupts                        */ 
 /*                                                          */
 /************************************************************/
-
 void enable_interrupts(CPU *cpu) {
     cpu->interrupts_enabled = 1;
 }
@@ -732,62 +731,30 @@ void enable_interrupts(CPU *cpu) {
 /* Purpose   : Disable CPU interrupts                       */
 /*                                                          */
 /************************************************************/
-
 void disable_interrupts(CPU *cpu) {
     cpu->interrupts_enabled = 0;
 }
 
-void service_v_blank(CPU *cpu) {
-    if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
-        cpu->interrupts_enabled = 0;
-        cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
-        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-        cpu->next_state.SP = cpu->current_state.SP - 2;
-        cpu->current_state.SP = cpu->next_state.SP;
-        cpu->next_state.PC = V_BLANK_ADDRESS;
-        cpu->current_state.PC = cpu->next_state.PC;
-    }
+/************************************************************/
+/*                                                          */
+/* Procedure : set_dma_flag                                 */
+/*                                                          */
+/* Purpose   : Indicate DMA is ready to begin               */ 
+/*                                                          */
+/************************************************************/
+void set_dma_flag(CPU *cpu) {
+    cpu->dma_flag = 1;
 }
 
-void service_lcdc_status(CPU *cpu) {
-    if (cpu->RAM[IE_REGISTER] & LCDC_STATUS_MASK) {
-        cpu->interrupts_enabled = 0;
-        cpu->RAM[IF_REGISTER] &= ~LCDC_STATUS_MASK;
-        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-        cpu->next_state.SP = cpu->current_state.SP - 2;
-        cpu->current_state.SP = cpu->next_state.SP;
-        cpu->next_state.PC = LCDC_STATUS_ADDRESS;
-        cpu->current_state.PC = cpu->next_state.PC;
-    }
-}
-
-void service_tim_oflow(CPU *cpu) {
-    if (cpu->RAM[IE_REGISTER] & TIM_OFLOW_MASK) {
-        cpu->interrupts_enabled = 0;
-        cpu->RAM[IF_REGISTER] &= ~TIM_OFLOW_MASK;
-        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-        cpu->next_state.SP = cpu->current_state.SP - 2;
-        cpu->next_state.PC = TIM_OFLOW_ADDRESS;
-    }
-}
-
-void service_interrupts(CPU *cpu) {
-    uint8_t interrupts = cpu->RAM[IF_REGISTER];
-    uint8_t interrupt_enabled = cpu->RAM[IE_REGISTER];
-
-    if ((interrupts & V_BLANK_MASK) &&
-        (interrupt_enabled & V_BLANK_MASK)) {
-            service_v_blank(cpu);
-    } else if ((interrupts & LCDC_STATUS_MASK) &&
-        (interrupt_enabled & LCDC_STATUS_MASK)) {
-            service_lcdc_status(cpu);
-    } else if ((interrupts & TIM_OFLOW_MASK) &&
-        (interrupt_enabled & TIM_OFLOW_MASK)) {
-            service_tim_oflow(cpu);
-        }
+/************************************************************/
+/*                                                          */
+/* Procedure : reset_dma_flag                               */
+/*                                                          */
+/* Purpose   : Clear DMA flag after DMA service begins      */
+/*                                                          */
+/************************************************************/
+void reset_dma_flag(CPU *cpu) {
+    cpu->dma_flag = 0;
 }
 
 /************************************************************/
@@ -828,6 +795,78 @@ void halt_cpu(CPU *cpu) {
 
 /************************************************************/
 /*                                                          */
+/* Procedure : service_v_blank                              */
+/*                                                          */
+/* Purpose   : Push PC onto the stack and jump to the       */
+/*             V-Blank ISR only if V-Blank interrupt        */
+/*             is enabled                                   */
+/*                                                          */
+/************************************************************/
+void service_v_blank(CPU *cpu) {
+    if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->current_state.SP = cpu->next_state.SP;
+        cpu->next_state.PC = V_BLANK_ADDRESS;
+        cpu->current_state.PC = cpu->next_state.PC;
+    }
+}
+
+void service_lcdc_status(CPU *cpu) {
+    if (cpu->RAM[IE_REGISTER] & LCDC_STATUS_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~LCDC_STATUS_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->current_state.SP = cpu->next_state.SP;
+        cpu->next_state.PC = LCDC_STATUS_ADDRESS;
+        cpu->current_state.PC = cpu->next_state.PC;
+    }
+}
+
+void service_tim_oflow(CPU *cpu) {
+    if (cpu->RAM[IE_REGISTER] & TIM_OFLOW_MASK) {
+        cpu->interrupts_enabled = 0;
+        cpu->RAM[IF_REGISTER] &= ~TIM_OFLOW_MASK;
+        write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
+        write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
+        cpu->next_state.SP = cpu->current_state.SP - 2;
+        cpu->next_state.PC = TIM_OFLOW_ADDRESS;
+    }
+}
+
+/************************************************************/
+/*                                                          */
+/* Procedure : service_interrupts                           */
+/*                                                          */
+/* Purpose   : Check for pending interrupts based           */
+/*             on the priority built into the SM83          */
+/*                                                          */
+/************************************************************/
+void service_interrupts(CPU *cpu) {
+    uint8_t interrupts = cpu->RAM[IF_REGISTER];
+    uint8_t interrupt_enabled = cpu->RAM[IE_REGISTER];
+
+    if ((interrupts & V_BLANK_MASK) &&
+        (interrupt_enabled & V_BLANK_MASK)) {
+            service_v_blank(cpu);
+    } else if ((interrupts & LCDC_STATUS_MASK) &&
+        (interrupt_enabled & LCDC_STATUS_MASK)) {
+            service_lcdc_status(cpu);
+    } else if ((interrupts & TIM_OFLOW_MASK) &&
+        (interrupt_enabled & TIM_OFLOW_MASK)) {
+            service_tim_oflow(cpu);
+    }
+    cpu->current_state.CYCLE_COUNT += SERVICE_INTERRUPT_CYCLE_DELAY;
+    cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT;
+}
+
+/************************************************************/
+/*                                                          */
 /* Procedure : init_cpu                                     */
 /*                                                          */
 /* Purpose   : initialize CPU default values                */ 
@@ -861,6 +900,14 @@ void init_cpu(CPU *cpu) {
     cpu->RAM[P1_REGISTER] = 0x0F;
 }
 
+/************************************************************/
+/*                                                          */
+/* Procedure : handle_dma                                   */
+/*                                                          */
+/* Purpose   : Perform DMA transfer from source address     */ 
+/*             specified in the DMA register to OAM         */
+/*                                                          */
+/************************************************************/
 void handle_dma(CPU *cpu) {
     cpu->dma_flag = 0;
     uint16_t src_address = cpu->RAM[DMA_REGISTER] << 8;
@@ -875,7 +922,6 @@ void handle_dma(CPU *cpu) {
 /* Purpose   : dump value of each CPU register              */ 
 /*                                                          */
 /************************************************************/
-
 void dump_registers(CPU *cpu) {
     printf("REGISTER VALUES:\n");
     printf("********************************\n");
@@ -901,7 +947,6 @@ void dump_registers(CPU *cpu) {
 /* Purpose   : Load a program ROM into memory               */ 
 /*                                                          */
 /************************************************************/
-
 void load_program(FILE *fp, CPU *cpu) {
     uint8_t word;
     uint32_t i = 0;
@@ -933,10 +978,9 @@ uint8_t fetch(CPU *cpu) {
 /*                                                          */
 /* Procedure : decode                                       */
 /*                                                          */
-/* Purpose   : get potential immediate for instruction      */
+/* Purpose   : decode instruction arguments                 */
 /*                                                          */
 /************************************************************/
-
 void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction *instruction) {
     if (cpu->CB_mode == 1) {
         *instruction = CB_INSTRUCTIONS[opcode];
@@ -978,6 +1022,13 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
     }
 }
 
+/************************************************************/
+/*                                                          */
+/* Procedure : execute                                      */
+/*                                                          */
+/* Purpose   : execute a single instruction                 */
+/*                                                          */
+/************************************************************/
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     if (check_condition(cpu, instruction->condition) == 0) {
         if (instruction->operation == RET) {
