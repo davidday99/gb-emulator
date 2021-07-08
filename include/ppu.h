@@ -1,5 +1,5 @@
-#ifndef VIDEO_H
-#define VIDEO_H
+#ifndef PPU_H
+#define PPU_H
 
 #include <stdint.h>
 #include "../include/cpu.h"
@@ -42,4 +42,4 @@ void init_video(Video *video, CPU *cpu);
 void step_video(Video *video, uint64_t cycles);
 void print_buffer(Video *video);
 
-#endif /* VIDEO_H */
+#endif /* PPU_H */
