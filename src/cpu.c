@@ -861,8 +861,12 @@ void service_interrupts(CPU *cpu) {
         (interrupt_enabled & TIM_OFLOW_MASK)) {
             service_tim_oflow(cpu);
     }
-    cpu->current_state.CYCLE_COUNT += SERVICE_INTERRUPT_CYCLE_DELAY;
-    cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT;
+
+    //true if at least one interrupt was serviced, so add cycle delay
+    if (interrupts & interrupt_enabled) {
+        cpu->current_state.CYCLE_COUNT += SERVICE_INTERRUPT_CYCLE_DELAY;
+        cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT;
+    }
 }
 
 /************************************************************/
