@@ -65,8 +65,25 @@ uint8_t get_pixel_color(uint8_t *tile_addr, uint8_t row, uint8_t pixel) {
     return color;
 }
 
-void write_screen(Video *video, uint8_t row) {
-    
+uint8_t get_bgp_color(Video *video, uint8_t color) {
+    uint8_t new_color = 0;
+    switch (color) {
+        case 0:
+            new_color = *video->bgp & 3;
+            break;
+        case 1:
+            new_color = (*video->bgp & 12) >> 2;
+            break;
+        case 2:
+            new_color = (*video->bgp & 48) >> 4;
+            break;
+        case 3:
+            new_color = (*video->bgp & 192) >> 6;
+            break;
+        default:
+            break;
+    }
+    return new_color;
 }
 
 void draw_background(Video *video) {
@@ -110,7 +127,7 @@ void draw_background(Video *video) {
             } else {
                 color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
             }
-            video->buffer[*video->ly][(tile * 8) + pixel - pixel_offset] = color;
+            video->buffer[*video->ly][(tile * 8) + pixel - pixel_offset] = get_bgp_color(video, color);
         }
     }
 
@@ -177,6 +194,36 @@ uint8_t get_obp0_color(Video *video, uint8_t color) {
     return new_color;
 }
 
+void draw_sprite_line(Video *video, uint16_t line, uint8_t start) {
+    uint8_t low = line & 0xFF;
+    uint8_t high = (line & 0xFF00) >> 8;
+    for (uint8_t pixel = 0; pixel < 8 && start - 8 >= 0; pixel++) {
+        uint8_t mask = 1 << (7 - pixel);
+        uint8_t color;
+        if (pixel == 7) {
+            color = (low & mask) | ((high & mask) << 1);
+        } else {
+            color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
+        }
+        video->buffer[*video->ly][start - (7 - pixel)] = get_obp0_color(video, color);
+    }
+}
+
+void draw_sprite_line_x_flipped(Video *video, uint16_t line, uint8_t start) {
+    uint8_t low = line & 0xFF;
+    uint8_t high = (line & 0xFF00) >> 8;
+    for (int8_t pixel = 7; pixel >= 0; pixel--) {
+        uint8_t mask = 1 << (7 - pixel);
+        uint8_t color;
+        if (pixel == 7) {
+            color = (low & mask) | ((high & mask) << 1);
+        } else {
+            color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
+        }
+        video->buffer[*video->ly][start - pixel] = get_obp0_color(video, color);
+    }
+}
+
 // TODO: handle x-pos. conflicts 
 void draw_sprites(Video *video) {
     uint8_t saveidx = 0;
@@ -220,32 +267,10 @@ void draw_sprites(Video *video) {
         uint8_t low = video->vram[tile_addr];
         uint8_t high = video->vram[tile_addr + 1];
 
-        int8_t pixel;
-
         if (attributes & X_FLIP_MASK) {
-            pixel = 7;
-            for (; pixel >= 0; pixel--) {
-                uint8_t mask = 1 << (7 - pixel);
-                uint8_t color;
-                if (pixel == 7) {
-                    color = (low & mask) | ((high & mask) << 1);
-                } else {
-                    color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
-                }
-                video->buffer[*video->ly][x_pos - pixel] = get_obp0_color(video, color);
-            }
+            draw_sprite_line_x_flipped(video, low | (high << 8), x_pos);
         } else {
-            pixel = 0;
-            for (; pixel < 8 && x_pos - 8 >= 0; pixel++) {
-                uint8_t mask = 1 << (7 - pixel);
-                uint8_t color;
-                if (pixel == 7) {
-                    color = (low & mask) | ((high & mask) << 1);
-                } else {
-                    color = ((low & mask) >> (7 - pixel)) | ((high & mask) >> (7 - (pixel + 1)));
-                }
-                video->buffer[*video->ly][x_pos - (7 - pixel)] = get_obp0_color(video, color);
-            }
+            draw_sprite_line(video, low | (high << 8), x_pos);
         }
     }
 }
