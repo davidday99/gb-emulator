@@ -804,7 +804,7 @@ void halt_cpu(CPU *cpu) {
 /************************************************************/
 void service_v_blank(CPU *cpu) {
     if (cpu->RAM[IE_REGISTER] & V_BLANK_MASK) {
-        cpu->interrupts_enabled = 0;
+        disable_interrupts(cpu);
         cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
         write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
         write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
@@ -817,7 +817,7 @@ void service_v_blank(CPU *cpu) {
 
 void service_lcdc_status(CPU *cpu) {
     if (cpu->RAM[IE_REGISTER] & LCDC_STATUS_MASK) {
-        cpu->interrupts_enabled = 0;
+        disable_interrupts(cpu);
         cpu->RAM[IF_REGISTER] &= ~LCDC_STATUS_MASK;
         write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
         write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
@@ -830,7 +830,7 @@ void service_lcdc_status(CPU *cpu) {
 
 void service_tim_oflow(CPU *cpu) {
     if (cpu->RAM[IE_REGISTER] & TIM_OFLOW_MASK) {
-        cpu->interrupts_enabled = 0;
+        disable_interrupts(cpu);
         cpu->RAM[IF_REGISTER] &= ~TIM_OFLOW_MASK;
         write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
         write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
