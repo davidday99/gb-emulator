@@ -11,5 +11,5 @@ void set_input(Input *input, uint8_t value) {
 }
 
 void set_input_select(Input *input) {
-    set_input(input, SELECT);
+    set_input(input, INPUT_SELECT);
 }

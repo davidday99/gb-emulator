@@ -11,14 +11,14 @@
 #define P15_OUT_PORT_MASK 32
 
 enum Buttons {
-    RIGHT,
-    LEFT = 2,
-    UP = 4,
-    DOWN = 8,
-    A = 0,
-    B = 2,
-    SELECT = 4,
-    START = 8
+    INPUT_RIGHT,
+    INPUT_LEFT = 2,
+    INPUT_UP = 4,
+    INPUT_DOWN = 8,
+    INPUT_A = 0,
+    INPUT_B = 2,
+    INPUT_SELECT = 4,
+    INPUT_START = 8
 };
 
 typedef struct Input {
