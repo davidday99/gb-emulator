@@ -6,7 +6,7 @@
 
 typedef struct GB {
     CPU cpu;
-    Video video;
+    PPU ppu;
     Screen screen;
 } GB;
 
@@ -17,8 +17,8 @@ static gboolean on_timeout(gpointer user_data) {
     for (uint16_t i = 0; i < 1000; i++) {
         uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
         step_cpu(&(gb->cpu));
-        step_video(&(gb->video), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
-        if (*(gb->video.ly) == 144) {
+        step_ppu(&(gb->ppu), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
+        if (*(gb->ppu.ly) == 144) {
             if (flag == 0) {
                 gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
                 flag = 1;
@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
     GB gb;
 
     init_cpu(&gb.cpu);
-    init_video(&gb.video, &gb.cpu);
-    init_screen(&gb.screen, gb.video.buffer);
+    init_ppu(&gb.ppu, &gb.cpu);
+    init_screen(&gb.screen, gb.ppu.buffer);
     load_program(f, &gb.cpu);
 
     g_timeout_add(1, on_timeout, &gb);

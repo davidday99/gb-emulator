@@ -16,10 +16,10 @@ int main(int argc, char *argv[]) {
     }
 
     CPU cpu;
-    Video video;
+    PPU ppu;
 
     init_cpu(&cpu);
-    init_video(&video, &cpu);
+    init_ppu(&ppu, &cpu);
     load_program(f, &cpu);
 
     uint64_t prev_cycles;
@@ -27,10 +27,10 @@ int main(int argc, char *argv[]) {
     while (1) {
         prev_cycles = cpu.current_state.CYCLE_COUNT;
         step_cpu(&cpu);
-        step_video(&video, cpu.current_state.CYCLE_COUNT - prev_cycles);
-        if (*video.ly == 144) {
+        step_ppu(&ppu, cpu.current_state.CYCLE_COUNT - prev_cycles);
+        if (*ppu.ly == 144) {
             if (flag == 0) {
-               print_buffer(&video);
+               print_buffer(&ppu);
                flag = 1;
             }
         } else {

@@ -592,7 +592,7 @@
 #define WX_REGISTER 0xFF4B
 #define IE_REGISTER 0xFFFF
 
-/* Video */
+/* PPU */
 #define TILE_DATA_SELECT_0 0x9000
 #define TILE_DATA_SELECT_1 0x8000
 

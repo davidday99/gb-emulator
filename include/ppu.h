@@ -15,9 +15,9 @@
 #define OBJ_DISP_MASK 2
 #define BG_WINDOW_DISPLAY_MASK 1
 
-#define VIDEO_FREQ 60
+#define PPU_FREQ 60
 
-typedef struct Video {
+typedef struct PPU {
     uint8_t *vram;
     uint8_t *bg_tile_map;
     uint8_t *oam;
@@ -36,10 +36,10 @@ typedef struct Video {
     uint8_t *wx;
     uint64_t CYCLE_COUNT;
     uint8_t **buffer;
-} Video;
+} PPU;
 
-void init_video(Video *video, CPU *cpu);
-void step_video(Video *video, uint64_t cycles);
-void print_buffer(Video *video);
+void init_ppu(PPU *ppu, CPU *cpu);
+void step_ppu(PPU *ppu, uint64_t cycles);
+void print_buffer(PPU *ppu);
 
 #endif /* PPU_H */
