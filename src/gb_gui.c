@@ -1,23 +1,15 @@
 #include <stdlib.h>
-#include "../include/cpu.h"
-#include "../include/ppu.h"
 #include "../include/screen.h"
 #include <gtk-3.0/gtk/gtk.h>
 
-typedef struct GB {
-    CPU cpu;
-    PPU ppu;
-    Screen screen;
-} GB;
+#include "../include/gb.h"
 
 static gboolean on_timeout(gpointer user_data) {
     static int8_t flag = 0;
     GB *gb = (GB*) user_data;
 
     for (uint16_t i = 0; i < 1000; i++) {
-        uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
-        step_cpu(&(gb->cpu));
-        step_ppu(&(gb->ppu), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
+        step_gb(gb);
         if (*(gb->ppu.ly) == 144) {
             if (flag == 0) {
                 gtk_widget_queue_draw(GTK_WIDGET(gb->screen.window.wind));
@@ -46,10 +38,8 @@ int main(int argc, char *argv[]) {
 
     GB gb;
 
-    init_cpu(&gb.cpu);
-    init_ppu(&gb.ppu, &gb.cpu);
-    init_screen(&gb.screen, gb.ppu.buffer);
-    load_program(f, &gb.cpu);
+    init_gb(&gb);
+    load_gb_game(&gb, f);
 
     g_timeout_add(1, on_timeout, &gb);
 

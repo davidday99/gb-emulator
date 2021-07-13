@@ -1,6 +1,5 @@
 #include <stdlib.h>
-#include "../include/cpu.h"
-#include "../include/ppu.h"
+#include "../include/gb.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -15,22 +14,17 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    CPU cpu;
-    PPU ppu;
+    GB gb;
 
-    init_cpu(&cpu);
-    init_ppu(&ppu, &cpu);
-    load_program(f, &cpu);
+    init_gb(&gb);
+    load_gb_game(&gb, f);
 
-    uint64_t prev_cycles;
     uint8_t flag = 0;
     while (1) {
-        prev_cycles = cpu.current_state.CYCLE_COUNT;
-        step_cpu(&cpu);
-        step_ppu(&ppu, cpu.current_state.CYCLE_COUNT - prev_cycles);
-        if (*ppu.ly == 144) {
+        step_gb(&gb);
+        if (*gb.ppu.ly == 144) {
             if (flag == 0) {
-               print_buffer(&ppu);
+               print_buffer(&gb.ppu);
                flag = 1;
             }
         } else {
