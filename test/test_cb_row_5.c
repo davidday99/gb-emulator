@@ -15,333 +15,273 @@ int test_cb_row_5(CPU *cpu) {
 
     load_program(f, cpu);
 
-    cpu->current_state.A = 4;
-    cpu->next_state.A = 4;
-    cpu->current_state.B = 4;
-    cpu->next_state.B = 4;
-    cpu->current_state.C = 4;
-    cpu->next_state.C = 4;
-    cpu->current_state.D = 4;
-    cpu->next_state.D = 4;
-    cpu->current_state.E = 4;
-    cpu->next_state.E = 4;
-    cpu->current_state.H = 4;
-    cpu->next_state.H = 4;
-    cpu->current_state.L = 4;
-    cpu->next_state.L = 4;
+    cpu->registers.A = 4;
+    cpu->registers.B = 4;
+    cpu->registers.C = 4;
+    cpu->registers.D = 4;
+    cpu->registers.E = 4;
+    cpu->registers.H = 4;
+    cpu->registers.L = 4;
 
     /* Test for bit[2] == 1 */
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,B
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,C
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,D
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,E
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,H
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,L
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = 4;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = 4;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,(HL)
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,A
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     /* Test for bit[2] == 0 */
 
-    cpu->current_state.A = ~cpu->current_state.A;
-    cpu->next_state.A = ~cpu->next_state.A;
-    cpu->current_state.B = ~cpu->current_state.B;
-    cpu->next_state.B = ~cpu->next_state.B;
-    cpu->current_state.C = ~cpu->current_state.C;
-    cpu->next_state.C = ~cpu->next_state.C;
-    cpu->current_state.D = ~cpu->current_state.D;
-    cpu->next_state.D = ~cpu->next_state.D;
-    cpu->current_state.E = ~cpu->current_state.E;
-    cpu->next_state.E = ~cpu->next_state.E;
-    cpu->current_state.H = ~cpu->current_state.H;
-    cpu->next_state.H = ~cpu->next_state.H;
-    cpu->current_state.L = ~cpu->current_state.L;
-    cpu->next_state.L = ~cpu->next_state.L;
+    cpu->registers.A = ~cpu->registers.A;
+    cpu->registers.B = ~cpu->registers.B;
+    cpu->registers.C = ~cpu->registers.C;
+    cpu->registers.D = ~cpu->registers.D;
+    cpu->registers.E = ~cpu->registers.E;
+    cpu->registers.H = ~cpu->registers.H;
+    cpu->registers.L = ~cpu->registers.L;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,B
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,C
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,D
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,E
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,H
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,L
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = ~4;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = ~4;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,(HL)
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 2,A
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.A = 8;
-    cpu->next_state.A = 8;
-    cpu->current_state.B = 8;
-    cpu->next_state.B = 8;
-    cpu->current_state.C = 8;
-    cpu->next_state.C = 8;
-    cpu->current_state.D = 8;
-    cpu->next_state.D = 8;
-    cpu->current_state.E = 8;
-    cpu->next_state.E = 8;
-    cpu->current_state.H = 8;
-    cpu->next_state.H = 8;
-    cpu->current_state.L = 8;
-    cpu->next_state.L = 8;
+    cpu->registers.A = 8;
+    cpu->registers.B = 8;
+    cpu->registers.C = 8;
+    cpu->registers.D = 8;
+    cpu->registers.E = 8;
+    cpu->registers.H = 8;
+    cpu->registers.L = 8;
 
     /* Test for bit[3] == 1 */
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,B
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,C
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,D
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,E
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,H
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,L
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = 8;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = 8;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,(HL)
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,A
-    assert(cpu->current_state.F == FLAG_H_MASK);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == FLAG_H_MASK);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     /* Test for bit[3] == 0 */
 
-    cpu->current_state.A = ~cpu->current_state.A;
-    cpu->next_state.A = ~cpu->next_state.A;
-    cpu->current_state.B = ~cpu->current_state.B;
-    cpu->next_state.B = ~cpu->next_state.B;
-    cpu->current_state.C = ~cpu->current_state.C;
-    cpu->next_state.C = ~cpu->next_state.C;
-    cpu->current_state.D = ~cpu->current_state.D;
-    cpu->next_state.D = ~cpu->next_state.D;
-    cpu->current_state.E = ~cpu->current_state.E;
-    cpu->next_state.E = ~cpu->next_state.E;
-    cpu->current_state.H = ~cpu->current_state.H;
-    cpu->next_state.H = ~cpu->next_state.H;
-    cpu->current_state.L = ~cpu->current_state.L;
-    cpu->next_state.L = ~cpu->next_state.L;
+    cpu->registers.A = ~cpu->registers.A;
+    cpu->registers.B = ~cpu->registers.B;
+    cpu->registers.C = ~cpu->registers.C;
+    cpu->registers.D = ~cpu->registers.D;
+    cpu->registers.E = ~cpu->registers.E;
+    cpu->registers.H = ~cpu->registers.H;
+    cpu->registers.L = ~cpu->registers.L;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,B
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,C
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,D
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,E
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,H
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,L
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = ~8;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = ~8;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,(HL)
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // BIT 3,A
-    assert(cpu->current_state.F == (FLAG_Z_MASK | FLAG_H_MASK));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;    
+    assert(cpu->registers.F == (FLAG_Z_MASK | FLAG_H_MASK));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;    
     
     return 0;
 }

@@ -28,43 +28,43 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
     uint16_t value;
     switch (reg) {
         case A:
-            value = cpu->current_state.A;
+            value = cpu->registers.A;
             break;
         case B:
-            value = cpu->current_state.B;
+            value = cpu->registers.B;
             break;
         case C:
-            value = cpu->current_state.C;
+            value = cpu->registers.C;
             break;
         case D:
-            value = cpu->current_state.D;
+            value = cpu->registers.D;
             break;
         case E:
-            value = cpu->current_state.E;
+            value = cpu->registers.E;
             break;
         case H:
-            value = cpu->current_state.H;
+            value = cpu->registers.H;
             break;
         case L:
-            value = cpu->current_state.L;
+            value = cpu->registers.L;
             break;
         case AF:
-            value = cpu->current_state.AF;
+            value = cpu->registers.AF;
             break;
         case BC:
-            value = cpu->current_state.BC;
+            value = cpu->registers.BC;
             break;
         case DE:
-            value = cpu->current_state.DE;
+            value = cpu->registers.DE;
             break;
         case HL:
-            value = cpu->current_state.HL;
+            value = cpu->registers.HL;
             break;
         case PC:
-            value = cpu->current_state.PC;
+            value = cpu->registers.PC;
             break;
         case SP:
-            value = cpu->current_state.SP;
+            value = cpu->registers.SP;
             break;
     }
     if (reg <= L) {
@@ -76,43 +76,43 @@ uint16_t get_register_value(CPU *cpu, enum operand reg) {
 void write_register(CPU *cpu, enum operand reg, uint16_t value) {
     switch (reg) {
         case A:
-            cpu->next_state.A = value;
+            cpu->registers.A = value;
             break;
         case B:
-            cpu->next_state.B = value;
+            cpu->registers.B = value;
             break;
         case C:
-            cpu->next_state.C = value;
+            cpu->registers.C = value;
             break;
         case D:
-            cpu->next_state.D = value;
+            cpu->registers.D = value;
             break;
         case E:
-            cpu->next_state.E = value;
+            cpu->registers.E = value;
             break;
         case H:
-            cpu->next_state.H = value;
+            cpu->registers.H = value;
             break;
         case L:
-            cpu->next_state.L = value;
+            cpu->registers.L = value;
             break;
         case AF:
-            cpu->next_state.AF = value;
+            cpu->registers.AF = value;
             break;
         case BC:
-            cpu->next_state.BC = value;
+            cpu->registers.BC = value;
             break;
         case DE:
-            cpu->next_state.DE = value;
+            cpu->registers.DE = value;
             break;
         case HL:
-            cpu->next_state.HL = value;
+            cpu->registers.HL = value;
             break;
         case PC:
-            cpu->next_state.PC = value;
+            cpu->registers.PC = value;
             break;
         case SP:
-            cpu->next_state.SP = value;
+            cpu->registers.SP = value;
             break;
     }
 }
@@ -126,33 +126,33 @@ void write_register(CPU *cpu, enum operand reg, uint16_t value) {
 void set_z_flag(CPU *cpu, uint8_t z) {
     uint8_t is_zero = !z;
     if (is_zero) {
-        cpu->next_state.F |= FLAG_Z_MASK;
+        cpu->registers.F |= FLAG_Z_MASK;
     } else {
-        cpu->next_state.F &= ~FLAG_Z_MASK;
+        cpu->registers.F &= ~FLAG_Z_MASK;
     }
 }
 
 void set_n_flag(CPU *cpu, uint8_t n) {
     if (n != 0) {
-        cpu->next_state.F |= FLAG_N_MASK;
+        cpu->registers.F |= FLAG_N_MASK;
     } else {
-        cpu->next_state.F &= ~FLAG_N_MASK;
+        cpu->registers.F &= ~FLAG_N_MASK;
     }
 }
 
 void set_h_flag(CPU *cpu, uint8_t h) {
     if (h != 0) {
-        cpu->next_state.F |= FLAG_H_MASK;
+        cpu->registers.F |= FLAG_H_MASK;
     } else {
-        cpu->next_state.F &= ~FLAG_H_MASK;
+        cpu->registers.F &= ~FLAG_H_MASK;
     }
 }
 
 void set_c_flag(CPU *cpu, uint8_t c) {
     if (c != 0) {
-        cpu->next_state.F |= FLAG_C_MASK;
+        cpu->registers.F |= FLAG_C_MASK;
     } else {
-        cpu->next_state.F &= ~FLAG_C_MASK;
+        cpu->registers.F &= ~FLAG_C_MASK;
     }
 }
 
@@ -200,16 +200,16 @@ uint8_t check_condition(CPU *cpu, enum condition cc) {
             cond = 1;
             break;
         case NZ:
-            cond = (cpu->current_state.F & FLAG_Z_MASK) == 0;
+            cond = (cpu->registers.F & FLAG_Z_MASK) == 0;
             break;
         case Z:
-            cond = (cpu->current_state.F & FLAG_Z_MASK) != 0;
+            cond = (cpu->registers.F & FLAG_Z_MASK) != 0;
             break;
         case NC:
-            cond = (cpu->current_state.F & FLAG_C_MASK) == 0;
+            cond = (cpu->registers.F & FLAG_C_MASK) == 0;
             break;
         case CARRY:
-            cond = (cpu->current_state.F & FLAG_C_MASK) != 0;
+            cond = (cpu->registers.F & FLAG_C_MASK) != 0;
     }
     return cond;
 }
@@ -221,7 +221,7 @@ uint8_t check_condition(CPU *cpu, enum condition cc) {
 /************************************************************/
 
 uint8_t read_memory(CPU *cpu, uint16_t address) {
-    cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
+    cpu->CYCLE_COUNT += MEM_CYCLE_DELAY;
     return cpu->RAM[address];
 }
 
@@ -234,7 +234,7 @@ void write_memory(CPU *cpu, uint8_t value, uint16_t address) {
     if (address == DMA_REGISTER)
         cpu->dma_flag = 1;
 
-    cpu->next_state.CYCLE_COUNT += MEM_CYCLE_DELAY;
+    cpu->CYCLE_COUNT += MEM_CYCLE_DELAY;
 }
 
 /************************************************************/
@@ -265,25 +265,25 @@ uint16_t get_operand(CPU *cpu, enum operand operand, enum addressing_mode addr_m
 
         case IMMEDIATE_MEM:
             if (operand == A8) {
-                op = read_memory(cpu, cpu->current_state.PC + 1);
+                op = read_memory(cpu, cpu->registers.PC + 1);
             } else if (operand == D8) {
-                op = (int8_t) read_memory(cpu, cpu->current_state.PC + 1);  // cast to sign-extend
+                op = (int8_t) read_memory(cpu, cpu->registers.PC + 1);  // cast to sign-extend
             } else if (operand == A16) {
-                op = read_memory(cpu, cpu->current_state.PC + 1) | 
-                        (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, cpu->registers.PC + 1) | 
+                        (read_memory(cpu, cpu->registers.PC + 2) << 8);
             } else if (operand == D16) {
-                op = read_memory(cpu, cpu->current_state.PC + 1) | 
-                    (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, cpu->registers.PC + 1) | 
+                    (read_memory(cpu, cpu->registers.PC + 2) << 8);
             }
             break;
 
         case IMMEDIATE_MEM_INDIRECT:
             if (operand == A8) {
-                op = read_memory(cpu, cpu->current_state.PC + 1);
+                op = read_memory(cpu, cpu->registers.PC + 1);
                 op += 0xFF00;
             } else if (operand == A16) {
-                op = read_memory(cpu, cpu->current_state.PC + 1) | 
-                    (read_memory(cpu, cpu->current_state.PC + 2) << 8);
+                op = read_memory(cpu, cpu->registers.PC + 1) | 
+                    (read_memory(cpu, cpu->registers.PC + 2) << 8);
             } 
 
             break;
@@ -315,32 +315,32 @@ void handle_ld_st_mov_operation(CPU *cpu, Instruction *instruction, uint16_t des
             break;
         case LDD:
             exec_ld(cpu, instruction, dest, src);
-            cpu->next_state.HL--;
+            cpu->registers.HL--;
             break;
         case LDI:
             exec_ld(cpu, instruction, dest, src);
-            cpu->next_state.HL++;
+            cpu->registers.HL++;
             break;
         case LDH:
             exec_ld(cpu, instruction, dest, src);
             break;
         case LDHL:
-            exec_ld(cpu, instruction, dest, src + cpu->current_state.SP);
+            exec_ld(cpu, instruction, dest, src + cpu->registers.SP);
             break;
         case PUSH:
-            write_memory(cpu, (src & 0xFF00) >> 8, cpu->current_state.SP - 1);
-            write_memory(cpu, src & 0xFF, cpu->current_state.SP - 2);
-            cpu->next_state.SP = cpu->current_state.SP - 2;
+            write_memory(cpu, (src & 0xFF00) >> 8, cpu->registers.SP - 1);
+            write_memory(cpu, src & 0xFF, cpu->registers.SP - 2);
+            cpu->registers.SP -= 2;
             break;
         case POP:
-            temp = read_memory(cpu, cpu->current_state.SP) |
-                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
+            temp = read_memory(cpu, cpu->registers.SP) |
+                    (read_memory(cpu, cpu->registers.SP + 1) << 8);
             write_register(cpu, instruction->destination, temp);
-            cpu->next_state.SP = cpu->current_state.SP + 2;
+            cpu->registers.SP += 2;
         default:
             break;
     }
-    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+    cpu->registers.PC += instruction->bytes;
 }
 
 void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -355,7 +355,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             }
             break;
         case ADC:
-            temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
+            temp1 = (cpu->registers.F & FLAG_C_MASK) >> 4;
             temp2 = detect_half_carry(dest, src) | detect_half_carry(dest + src, temp1);
             temp3 = detect_carry(dest, src, 0) | detect_carry(dest + src, temp1, 0);
             write_register(cpu, instruction->destination, dest + src + temp1);
@@ -366,7 +366,7 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             set_flags(cpu, FLAG_Z_MASK | FLAG_N_MASK |FLAG_H_MASK | FLAG_C_MASK, dest - src, 1, detect_half_carry(dest, -src), detect_carry(dest, -src, 0));
             break;
         case SBC:
-            temp1 = (cpu->current_state.F & FLAG_C_MASK) >> 4;
+            temp1 = (cpu->registers.F & FLAG_C_MASK) >> 4;
             temp2 = detect_half_carry(dest, -src) | detect_half_carry(dest - src, -temp1);
             temp3 = detect_carry(dest, -src, 0) | detect_carry(dest - src, -temp1, 0);
             write_register(cpu, instruction->destination, dest - src - temp1);
@@ -420,9 +420,9 @@ void handle_alu_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uin
             break;
     }
     if (instruction->destination >= AF && instruction->destination <= SP && instruction->destination_type == REGISTER) {
-        cpu->next_state.CYCLE_COUNT += ALU_DELAY_16_BIT;
+        cpu->CYCLE_COUNT += ALU_DELAY_16_BIT;
     }
-    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+    cpu->registers.PC += instruction->bytes;
 }
 
 void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
@@ -430,14 +430,14 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
     uint16_t temp, temp1;
     switch (instruction->operation) {
         case RL:
-            temp = cpu->current_state.F & FLAG_C_MASK;
+            temp = cpu->registers.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             src <<= 1;
             src |= (temp >> 4);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RLA:
-            temp = cpu->current_state.F & FLAG_C_MASK;
+            temp = cpu->registers.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 0x80);
             src <<= 1;
             src |= (temp >> 4);
@@ -456,14 +456,14 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
             src |= (temp >> 7);
             break;
         case RR:
-            temp = cpu->current_state.F & FLAG_C_MASK;
+            temp = cpu->registers.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= (temp << 3);
             set_flags(cpu, FLAG_Z_MASK, src, 0, 0, 0);
             break;
         case RRA:
-            temp = cpu->current_state.F & FLAG_C_MASK;
+            temp = cpu->registers.F & FLAG_C_MASK;
             set_flags(cpu, FLAG_C_MASK, 0, 0, 0, src & 1);
             src >>= 1;
             src |= (temp << 3);
@@ -511,7 +511,7 @@ void handle_shift_operation(CPU *cpu, Instruction *instruction, uint16_t dest, u
     instruction->destination_type == REGISTER ?
         write_register(cpu, instruction->destination, src) :
         write_memory(cpu, src, dest);
-    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+    cpu->registers.PC += instruction->bytes;
 }
 
 /************************************************************/
@@ -575,74 +575,74 @@ void handle_bitwise_operation(CPU *cpu, Instruction *instruction, uint16_t dest,
             write_register(cpu, instruction->destination, src) :
             write_memory(cpu, src, dest);
     }
-    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+    cpu->registers.PC += instruction->bytes;
 }
 
 void handle_jump_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     uint16_t temp;
     switch (instruction->operation) {
         case CALL:
-            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->current_state.SP - 1);
-            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF), cpu->current_state.SP - 2);
-            cpu->next_state.SP = cpu->current_state.SP - 2;
-            cpu->next_state.PC = dest;
+            write_memory(cpu, ((cpu->registers.PC + instruction->bytes) & 0xFF00) >> 8, cpu->registers.SP - 1);
+            write_memory(cpu, ((cpu->registers.PC + instruction->bytes) & 0xFF), cpu->registers.SP - 2);
+            cpu->registers.SP -= 2;
+            cpu->registers.PC = dest;
             break;
         case JP:
-            cpu->next_state.PC = dest;
+            cpu->registers.PC = dest;
             break;
         case JR:
-            cpu->next_state.PC = cpu->current_state.PC + instruction->bytes + dest;
+            cpu->registers.PC += instruction->bytes + dest;
             break;
         case RET:
-            temp = read_memory(cpu, cpu->current_state.SP) |
-                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
-            cpu->next_state.SP = cpu->current_state.SP + 2;
-            cpu->next_state.PC = temp;
+            temp = read_memory(cpu, cpu->registers.SP) |
+                    (read_memory(cpu, cpu->registers.SP + 1) << 8);
+            cpu->registers.SP += 2;
+            cpu->registers.PC = temp;
             break;
         case RETI:
-            temp = read_memory(cpu, cpu->current_state.SP) |
-                    (read_memory(cpu, cpu->current_state.SP + 1) << 8);
-            cpu->next_state.SP = cpu->current_state.SP + 2;
-            cpu->next_state.PC = temp;
+            temp = read_memory(cpu, cpu->registers.SP) |
+                    (read_memory(cpu, cpu->registers.SP + 1) << 8);
+            cpu->registers.SP += 2;
+            cpu->registers.PC = temp;
             enable_interrupts(cpu);
             break;
         case RST:
-            write_memory(cpu, ((cpu->current_state.PC + instruction->bytes) & 0xFF00) >> 8, cpu->current_state.SP - 1);
-            write_memory(cpu, (cpu->current_state.PC + instruction->bytes) & 0xFF, cpu->current_state.SP - 2);
-            cpu->next_state.SP = cpu->current_state.SP - 2;
-            cpu->next_state.PC = dest;
+            write_memory(cpu, ((cpu->registers.PC + instruction->bytes) & 0xFF00) >> 8, cpu->registers.SP - 1);
+            write_memory(cpu, (cpu->registers.PC + instruction->bytes) & 0xFF, cpu->registers.SP - 2);
+            cpu->registers.SP -= 2;
+            cpu->registers.PC = dest;
             break;
         default:
             break;
     }
     if (instruction->opcode != 0xE9) {
-        cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
+        cpu->CYCLE_COUNT += JUMP_DELAY;
     }
 }
 
 void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     switch (instruction->operation) {
         case CCF:
-            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, !(cpu->current_state.F & FLAG_C_MASK));
+            set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, !(cpu->registers.F & FLAG_C_MASK));
             break;
         case CPL:
             write_register(cpu, instruction->destination, ~dest);
             set_flags(cpu, FLAG_N_MASK | FLAG_H_MASK, 0, 1, 1, 0);
             break;
         case DAA:
-            if ((cpu->current_state.F & FLAG_N_MASK) == 0) {
-                if (cpu->current_state.F & FLAG_C_MASK) {
+            if ((cpu->registers.F & FLAG_N_MASK) == 0) {
+                if (cpu->registers.F & FLAG_C_MASK) {
                     write_register(cpu, instruction->destination, dest + 0x60);
                     set_flags(cpu, FLAG_H_MASK | FLAG_C_MASK, 0, 0, 0, 1);
                 }
-                if ((cpu->current_state.F & FLAG_H_MASK) || (dest & 0x0F) > 0x09) {
+                if ((cpu->registers.F & FLAG_H_MASK) || (dest & 0x0F) > 0x09) {
                     write_register(cpu, instruction->destination, dest + 0x06);
                 }
             } else {
-                if (cpu->current_state.F & FLAG_C_MASK) {
+                if (cpu->registers.F & FLAG_C_MASK) {
                     write_register(cpu, instruction->destination, dest - 0x60);
                 }
-                if (cpu->current_state.F & FLAG_H_MASK) {
+                if (cpu->registers.F & FLAG_H_MASK) {
                     write_register(cpu, instruction->destination, dest - 0x06);
                 }
             }
@@ -670,7 +670,7 @@ void handle_misc_operation(CPU *cpu, Instruction *instruction, uint16_t dest, ui
         default:
             break;
     }
-    cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+    cpu->registers.PC += instruction->bytes;
 }
 
 /************************************************************/
@@ -805,32 +805,28 @@ void halt_cpu(CPU *cpu) {
 void service_v_blank(CPU *cpu) {
     disable_interrupts(cpu);
     cpu->RAM[IF_REGISTER] &= ~V_BLANK_MASK;
-    write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-    write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-    cpu->next_state.SP = cpu->current_state.SP - 2;
-    cpu->current_state.SP = cpu->next_state.SP;
-    cpu->next_state.PC = V_BLANK_ADDRESS;
-    cpu->current_state.PC = cpu->next_state.PC;
+    write_memory(cpu, (cpu->registers.PC & 0xFF00) >> 8, cpu->registers.SP - 1);
+    write_memory(cpu, cpu->registers.PC & 0xFF, cpu->registers.SP - 2);
+    cpu->registers.SP -= 2;
+    cpu->registers.PC = V_BLANK_ADDRESS;
 }
 
 void service_lcdc_status(CPU *cpu) {
     disable_interrupts(cpu);
     cpu->RAM[IF_REGISTER] &= ~LCDC_STATUS_MASK;
-    write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-    write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-    cpu->next_state.SP = cpu->current_state.SP - 2;
-    cpu->current_state.SP = cpu->next_state.SP;
-    cpu->next_state.PC = LCDC_STATUS_ADDRESS;
-    cpu->current_state.PC = cpu->next_state.PC;
+    write_memory(cpu, (cpu->registers.PC & 0xFF00) >> 8, cpu->registers.SP - 1);
+    write_memory(cpu, cpu->registers.PC & 0xFF, cpu->registers.SP - 2);
+    cpu->registers.SP -= 2;
+    cpu->registers.PC = LCDC_STATUS_ADDRESS;
 }
 
 void service_tim_oflow(CPU *cpu) {
     disable_interrupts(cpu);
     cpu->RAM[IF_REGISTER] &= ~TIM_OFLOW_MASK;
-    write_memory(cpu, (cpu->current_state.PC & 0xFF00) >> 8, cpu->current_state.SP - 1);
-    write_memory(cpu, cpu->current_state.PC & 0xFF, cpu->current_state.SP - 2);
-    cpu->next_state.SP = cpu->current_state.SP - 2;
-    cpu->next_state.PC = TIM_OFLOW_ADDRESS;
+    write_memory(cpu, (cpu->registers.PC & 0xFF00) >> 8, cpu->registers.SP - 1);
+    write_memory(cpu, cpu->registers.PC & 0xFF, cpu->registers.SP - 2);
+    cpu->registers.SP -= 2;
+    cpu->registers.PC = TIM_OFLOW_ADDRESS;
 }
 
 /************************************************************/
@@ -858,8 +854,8 @@ void service_interrupts(CPU *cpu) {
 
     //true if at least one interrupt was serviced, so add cycle delay
     if (interrupts & interrupt_enabled) {
-        cpu->current_state.CYCLE_COUNT += SERVICE_INTERRUPT_CYCLE_DELAY;
-        cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT;
+        cpu->CYCLE_COUNT += SERVICE_INTERRUPT_CYCLE_DELAY;
+        cpu->CYCLE_COUNT = cpu->CYCLE_COUNT;
     }
 }
 
@@ -871,16 +867,16 @@ void service_interrupts(CPU *cpu) {
 /*                                                          */
 /************************************************************/
 void init_cpu(CPU *cpu) {
-    cpu->next_state.AF = 0;
-    cpu->next_state.BC = 0x0013;
-    cpu->next_state.DE = 0x00D8;
-    cpu->next_state.HL = 0x014D;
-    cpu->next_state.PC = 0;
-    cpu->next_state.SP = 0xFFFE;
-    cpu->next_state.CYCLE_COUNT = 0;
-    cpu->next_state.INSTRUCTION_COUNT = 0;
+    cpu->registers.AF = 0;
+    cpu->registers.BC = 0x0013;
+    cpu->registers.DE = 0x00D8;
+    cpu->registers.HL = 0x014D;
+    cpu->registers.PC = 0;
+    cpu->registers.SP = 0xFFFE;
 
-    cpu->current_state = cpu->next_state;
+    cpu->CYCLE_COUNT = 0;
+    cpu->INSTRUCTION_COUNT = 0;
+
     cpu->CB_mode = 0;
     cpu->interrupts_enabled = 0;
     cpu->stopped = 0;
@@ -910,7 +906,7 @@ void handle_dma(CPU *cpu) {
     cpu->dma_flag = 0;
     uint16_t src_address = cpu->RAM[DMA_REGISTER] << 8;
     memcpy(&(cpu->RAM[OAM_ADDRESS]), &(cpu->RAM[src_address]), sizeof(uint8_t) * 0x9F);
-    cpu->next_state.CYCLE_COUNT = cpu->current_state.CYCLE_COUNT + DMA_CYCLE_DELAY;
+    cpu->CYCLE_COUNT += DMA_CYCLE_DELAY;
 }
 
 /************************************************************/
@@ -923,18 +919,18 @@ void handle_dma(CPU *cpu) {
 void dump_registers(CPU *cpu) {
     printf("REGISTER VALUES:\n");
     printf("********************************\n");
-    printf("Cycle Count: %d\n", cpu->current_state.CYCLE_COUNT);
-    printf("Instruction Count: %d\n", cpu->current_state.INSTRUCTION_COUNT);
-    printf("PC: write_mex%04X\n", cpu->current_state.PC);
-    printf("SP: 0x%04X\n", cpu->current_state.SP);
-    printf("A: 0x%02X\t", cpu->current_state.A);
-    printf("F: 0x%02X\n", cpu->current_state.F);
-    printf("B: 0x%02X\t", cpu->current_state.B);
-    printf("C: 0x%02X\n", cpu->current_state.C);
-    printf("D: 0x%02X\t", cpu->current_state.D);
-    printf("E: 0x%02X\n", cpu->current_state.E);
-    printf("H: 0x%02X\t", cpu->current_state.H);
-    printf("L: 0x%02X\n", cpu->current_state.L);
+    printf("Cycle Count: %d\n", cpu->CYCLE_COUNT);
+    printf("Instruction Count: %d\n", cpu->INSTRUCTION_COUNT);
+    printf("PC: write_mex%04X\n", cpu->registers.PC);
+    printf("SP: 0x%04X\n", cpu->registers.SP);
+    printf("A: 0x%02X\t", cpu->registers.A);
+    printf("F: 0x%02X\n", cpu->registers.F);
+    printf("B: 0x%02X\t", cpu->registers.B);
+    printf("C: 0x%02X\n", cpu->registers.C);
+    printf("D: 0x%02X\t", cpu->registers.D);
+    printf("E: 0x%02X\n", cpu->registers.E);
+    printf("H: 0x%02X\t", cpu->registers.H);
+    printf("L: 0x%02X\n", cpu->registers.L);
     printf("********************************\n");
 }
 
@@ -953,7 +949,7 @@ void load_program(FILE *fp, CPU *cpu) {
         cpu->RAM[i++] = word;
     }
 
-    cpu->current_state.PC = 0x100;
+    cpu->registers.PC = 0x100;
 }
 
 /************************************************************/
@@ -969,7 +965,7 @@ uint8_t fetch(CPU *cpu) {
     if (cpu->interrupts_enabled == 1) {
         service_interrupts(cpu);
     }
-    return read_memory(cpu, cpu->current_state.PC);
+    return read_memory(cpu, cpu->registers.PC);
 }
 
 /************************************************************/
@@ -1030,9 +1026,9 @@ void decode(CPU *cpu, uint8_t opcode, uint16_t *dest, uint16_t *src, Instruction
 void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
     if (check_condition(cpu, instruction->condition) == 0) {
         if (instruction->operation == RET) {
-            cpu->next_state.CYCLE_COUNT += JUMP_DELAY;
+            cpu->CYCLE_COUNT += JUMP_DELAY;
         }
-        cpu->next_state.PC = cpu->current_state.PC + instruction->bytes;
+        cpu->registers.PC += instruction->bytes;
         return;
     }
 
@@ -1058,7 +1054,7 @@ void execute(CPU *cpu, Instruction *instruction, uint16_t dest, uint16_t src) {
         default:
             break;
     }
-    cpu->next_state.CYCLE_COUNT += instruction->unaccounted_cycles;  // add any cycles that weren't covered by memory R/W
+    cpu->CYCLE_COUNT += instruction->unaccounted_cycles;  // add any cycles that weren't covered by memory R/W
 }
 
 /************************************************************/
@@ -1080,8 +1076,7 @@ void step_cpu(CPU *cpu) {
         decode(cpu, opcode, &dest, &src, &instruction);
         execute(cpu, &instruction, dest, src);
     }
-    cpu->next_state.INSTRUCTION_COUNT = cpu->current_state.INSTRUCTION_COUNT + 1;
-    cpu->current_state = cpu->next_state;
+    cpu->INSTRUCTION_COUNT += 1;
 }
 
 /************************************************************/
@@ -1108,5 +1103,5 @@ void step_cpu_n(uint32_t n, CPU *cpu) {
 void run(CPU *cpu) {
     do {
         step_cpu(cpu);
-    } while (cpu->current_state.PC != 0);
+    } while (cpu->registers.PC != 0);
 }

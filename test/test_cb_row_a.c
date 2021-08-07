@@ -15,165 +15,135 @@ int test_cb_row_a(CPU *cpu) {
 
     load_program(f, cpu);
 
-    cpu->current_state.A = 16;
-    cpu->next_state.A = 16;
-    cpu->current_state.B = 16;
-    cpu->next_state.B = 16;
-    cpu->current_state.C = 16;
-    cpu->next_state.C = 16;
-    cpu->current_state.D = 16;
-    cpu->next_state.D = 16;
-    cpu->current_state.E = 16;
-    cpu->next_state.E = 16;
-    cpu->current_state.H = 16;
-    cpu->next_state.H = 16;
-    cpu->current_state.L = 16;
-    cpu->next_state.L = 16;
+    cpu->registers.A = 16;
+    cpu->registers.B = 16;
+    cpu->registers.C = 16;
+    cpu->registers.D = 16;
+    cpu->registers.E = 16;
+    cpu->registers.H = 16;
+    cpu->registers.L = 16;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,B
-    assert(cpu->current_state.B == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.B == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,C
-    assert(cpu->current_state.C == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.C == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,D
-    assert(cpu->current_state.D == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,E
-    assert(cpu->current_state.E == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,H
-    assert(cpu->current_state.H == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.H == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,L
-    assert(cpu->current_state.L == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.L == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = 16;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = 16;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,(HL)
-    assert(cpu->RAM[cpu->current_state.HL] == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->RAM[cpu->registers.HL] == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 4,A
-    assert(cpu->current_state.A == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.A == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.A = 32;
-    cpu->next_state.A = 32;
-    cpu->current_state.B = 32;
-    cpu->next_state.B = 32;
-    cpu->current_state.C = 32;
-    cpu->next_state.C = 32;
-    cpu->current_state.D = 32;
-    cpu->next_state.D = 32;
-    cpu->current_state.E = 32;
-    cpu->next_state.E = 32;
-    cpu->current_state.H = 32;
-    cpu->next_state.H = 32;
-    cpu->current_state.L = 32;
-    cpu->next_state.L = 32;
+    cpu->registers.A = 32;
+    cpu->registers.B = 32;
+    cpu->registers.C = 32;
+    cpu->registers.D = 32;
+    cpu->registers.E = 32;
+    cpu->registers.H = 32;
+    cpu->registers.L = 32;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,B
-    assert(cpu->current_state.B == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.B == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,C
-    assert(cpu->current_state.C == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.C == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,D
-    assert(cpu->current_state.D == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,E
-    assert(cpu->current_state.E == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,H
-    assert(cpu->current_state.H == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.H == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,L
-    assert(cpu->current_state.L == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.L == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
-    cpu->RAM[cpu->current_state.HL] = 32;
+    cpu->registers.F = 0;
+    cpu->RAM[cpu->registers.HL] = 32;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,(HL)
-    assert(cpu->RAM[cpu->current_state.HL] == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 16);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->RAM[cpu->registers.HL] == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 16);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
     step_cpu(cpu); // Enter CB Mode
     step_cpu(cpu); // RES 5,A
-    assert(cpu->current_state.A == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.A == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     return 0;
 }

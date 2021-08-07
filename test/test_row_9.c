@@ -11,155 +11,123 @@ int test_row_9(CPU *cpu) {
 
     int prev_cycles = 0;
 
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
-    cpu->current_state.B = 1;
-    cpu->next_state.B = 1;
-    cpu->current_state.C = 2;
-    cpu->next_state.C = 2;
-    cpu->current_state.D = 3;
-    cpu->next_state.D = 3;
-    cpu->current_state.E = 4;
-    cpu->next_state.E = 4;
-    cpu->current_state.H = 5;
-    cpu->next_state.H = 5;
-    cpu->current_state.L = 6;
-    cpu->next_state.L = 6;
+    cpu->registers.A = 0;
+    cpu->registers.B = 1;
+    cpu->registers.C = 2;
+    cpu->registers.D = 3;
+    cpu->registers.E = 4;
+    cpu->registers.H = 5;
+    cpu->registers.L = 6;
 
     FILE *f = fopen("games/test/test_ops_row_9.gb", "rb");
 
     load_program(f, cpu);
 
     step_cpu(cpu); // SUB B
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.B);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.B);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB C
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.C);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.C);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB D
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.D);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.D);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB E
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.E);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.E);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB H
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.H);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.H);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB L
-    assert(cpu->current_state.A == (uint8_t) -cpu->current_state.L);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->registers.L);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->RAM[cpu->current_state.HL] = 1;
+    cpu->RAM[cpu->registers.HL] = 1;
 
     step_cpu(cpu); // SUB (HL)
-    assert(cpu->current_state.A == (uint8_t) -cpu->RAM[cpu->current_state.HL]);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -cpu->RAM[cpu->registers.HL]);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     step_cpu(cpu); // SUB A
-    assert(cpu->current_state.A == 0);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == 0);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC B
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.B - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.B - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC C
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.C - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.C - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC D
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.D - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.D - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC E
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.E - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.E - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC H
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.H - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.H - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC L
-    assert(cpu->current_state.A == (uint8_t) (-cpu->current_state.L - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->registers.L - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC (HL)
-    assert(cpu->current_state.A == (uint8_t) (-cpu->RAM[cpu->current_state.HL] - 1));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) (-cpu->RAM[cpu->registers.HL] - 1));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
-    cpu->current_state.F = FLAG_C_MASK;
-    cpu->next_state.F = FLAG_C_MASK;
+    cpu->registers.F = FLAG_C_MASK;
     step_cpu(cpu); // SBC A
-    assert(cpu->current_state.A == (uint8_t) -1);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
-    cpu->current_state.A = 0;
-    cpu->next_state.A = 0;
+    assert(cpu->registers.A == (uint8_t) -1);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
+    cpu->registers.A = 0;
 
     return 0;
 }

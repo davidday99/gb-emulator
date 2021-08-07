@@ -15,92 +15,87 @@ int test_jr(CPU *cpu) {
 
     load_program(f, cpu);
 
-    uint16_t prev_PC = cpu->current_state.PC;
+    uint16_t prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR 2
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2 + 2)); // 2 bytes for instruction, 1 byte for jump
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2 + 2)); // 2 bytes for instruction, 1 byte for jump
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR -4
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2 - 4)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2 - 4)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR 2
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2 + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2 + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR 0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-
-
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
 
     /* These conditionals shouldn't execute */
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR Z,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR C,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0xF0;
-    cpu->next_state.F = 0xF0;
+    cpu->registers.F = 0xF0;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR NZ,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR NC,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     /* These conditionals should execute */
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR Z,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR C,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->current_state.F = 0;
-    cpu->next_state.F = 0;
+    cpu->registers.F = 0;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR NZ,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2));
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2));
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    prev_PC = cpu->current_state.PC;
+    prev_PC = cpu->registers.PC;
     step_cpu(cpu); // JR NC,0
-    assert(cpu->current_state.PC == (uint16_t) (prev_PC + 2)); 
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 12);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.PC == (uint16_t) (prev_PC + 2)); 
+    assert(cpu->CYCLE_COUNT - prev_cycles == 12);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     return 0;
 }

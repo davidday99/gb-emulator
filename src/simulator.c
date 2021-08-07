@@ -65,7 +65,7 @@ void simulate(CPU *cpu) {
             continue;
         };
         
-    } while (cpu->current_state.PC != 0);
+    } while (cpu->registers.PC != 0);
 }
 
 int main(int argc, char *argv[]) {

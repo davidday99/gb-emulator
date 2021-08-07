@@ -13,7 +13,7 @@
 
 #define CPU_FREQ 4194304
 
-typedef struct Core {
+typedef struct Registers {
     union {
         struct {
             uint8_t F;
@@ -49,19 +49,18 @@ typedef struct Core {
 
     uint16_t SP;
     uint16_t PC;
-    uint64_t CYCLE_COUNT;
-    uint64_t INSTRUCTION_COUNT;
-} Core;
+} Registers;
 
 typedef struct CPU {
-    Core current_state;
-    Core next_state;
+    Registers registers;
     uint8_t RAM[RAM_SIZE];
     uint8_t CB_mode;
     uint8_t interrupts_enabled;
     uint8_t stopped;
     uint8_t low_power_mode;
     uint8_t dma_flag;
+    uint64_t CYCLE_COUNT;
+    uint64_t INSTRUCTION_COUNT;
 } CPU;
 
 void init_cpu(CPU *cpu);

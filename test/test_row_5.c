@@ -11,111 +11,102 @@ int test_row_5(CPU *cpu) {
 
     int prev_cycles = 0;
 
-    cpu->current_state.A = 1;
-    cpu->next_state.A = 1;
-    cpu->current_state.B = 2;
-    cpu->next_state.B = 2;
-    cpu->current_state.C = 3;
-    cpu->next_state.C = 3;
-    cpu->current_state.D = 0;
-    cpu->next_state.D = 0;
-    cpu->current_state.E = 5;
-    cpu->next_state.E = 5;
-    cpu->current_state.H = 6;
-    cpu->next_state.H = 6;
-    cpu->current_state.L = 7;
-    cpu->next_state.L = 7;
+    cpu->registers.A = 1;
+    cpu->registers.B = 2;
+    cpu->registers.C = 3;
+    cpu->registers.D = 0;
+    cpu->registers.E = 5;
+    cpu->registers.H = 6;
+    cpu->registers.L = 7;
 
     FILE *f = fopen("games/test/test_ops_row_5.gb", "rb");
 
     load_program(f, cpu);
 
     step_cpu(cpu); // LD D,B
-    assert(cpu->current_state.D == cpu->current_state.B);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.B);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     step_cpu(cpu); // LD D,C
-    assert(cpu->current_state.D == cpu->current_state.C);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.C);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD D,D
-    assert(cpu->current_state.D == 3);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == 3);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD D,E
-    assert(cpu->current_state.D == cpu->current_state.E);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.E);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD D,H
-    assert(cpu->current_state.D == cpu->current_state.H);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.H);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD D,L
-    assert(cpu->current_state.D == cpu->current_state.L);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.L);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
 
-    cpu->RAM[cpu->current_state.HL] = 0xFF;
+    cpu->RAM[cpu->registers.HL] = 0xFF;
     
     step_cpu(cpu); // LD D,(HL)
-    assert(cpu->current_state.D == cpu->RAM[cpu->current_state.HL]);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->RAM[cpu->registers.HL]);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD D,A
-    assert(cpu->current_state.D == cpu->current_state.A);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.D == cpu->registers.A);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
-    cpu->current_state.D = 4;
-    cpu->next_state.D = 4;
-    cpu->current_state.E = 0;
-    cpu->next_state.E = 0;
+    cpu->registers.D = 4;
+    cpu->registers.E = 0;
 
     step_cpu(cpu); // LD E,B
-    assert(cpu->next_state.E == cpu->current_state.B);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.B);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     step_cpu(cpu); // LD E,C
-    assert(cpu->next_state.E == cpu->current_state.C);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.C);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,D
-    assert(cpu->next_state.E == cpu->current_state.D);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.D);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,E
-    assert(cpu->next_state.E == 4);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == 4);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,H
-    assert(cpu->next_state.E == cpu->current_state.H);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.H);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,L
-    assert(cpu->next_state.E == cpu->current_state.L);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.L);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,(HL)
-    assert(cpu->next_state.E == cpu->RAM[cpu->current_state.HL]);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 8);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->RAM[cpu->registers.HL]);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 8);
+    prev_cycles = cpu->CYCLE_COUNT;
     
     step_cpu(cpu); // LD E,A
-    assert(cpu->next_state.E == cpu->current_state.A);
-    assert(cpu->current_state.CYCLE_COUNT - prev_cycles == 4);
-    prev_cycles = cpu->current_state.CYCLE_COUNT;
+    assert(cpu->registers.E == cpu->registers.A);
+    assert(cpu->CYCLE_COUNT - prev_cycles == 4);
+    prev_cycles = cpu->CYCLE_COUNT;
 
     return 0;
 }

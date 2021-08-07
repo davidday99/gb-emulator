@@ -12,7 +12,7 @@ void load_gb_game(GB *gb, FILE *rom) {
 }
 
 void step_gb(GB *gb) {
-    uint64_t prev_cycles = gb->cpu.current_state.CYCLE_COUNT;
+    uint64_t prev_cycles = gb->cpu.CYCLE_COUNT;
     step_cpu(&(gb->cpu));
-    step_ppu(&(gb->ppu), gb->cpu.current_state.CYCLE_COUNT - prev_cycles);
+    step_ppu(&(gb->ppu), gb->cpu.CYCLE_COUNT - prev_cycles);
 }
